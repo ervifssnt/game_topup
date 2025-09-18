@@ -1,7 +1,7 @@
 <?php
 $host = "localhost";
-$user = "root";   // default for XAMPP
-$pass = "";       // default: empty password
+$user = "root";   
+$pass = "";       
 $db   = "game_topup";
 
 $conn = new mysqli($host, $user, $pass, $db);

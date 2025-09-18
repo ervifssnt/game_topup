@@ -6,7 +6,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $account_id = $_POST['account_id'];
     $topup_option_id = $_POST['topup_option_id'];
 
-    // For now, assume user_id = 1 (until we build login system)
     $user_id = 1;
 
     $conn->query("INSERT INTO transactions (user_id, game_id, account_id, topup_option_id, status)
