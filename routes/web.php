@@ -1,0 +1,31 @@
+<?php
+
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\GameController;
+use App\Http\Controllers\TransactionController;
+use Illuminate\Support\Facades\Route;
+
+// Guest routes (not logged in)
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [AuthController::class, 'register']);
+});
+
+// Authenticated routes (must be logged in)
+Route::middleware('auth')->group(function () {
+    // Homepage
+    Route::get('/', [GameController::class, 'index'])->name('home');
+    
+    // Topup
+    Route::get('/topup/{id}', [GameController::class, 'topup'])->name('topup');
+    Route::post('/topup', [TransactionController::class, 'store'])->name('topup.store');
+    
+    // Checkout
+    Route::get('/checkout/{id}', [TransactionController::class, 'checkout'])->name('checkout');
+    Route::post('/checkout/process', [TransactionController::class, 'processCheckout'])->name('checkout.process');
+    
+    // Logout
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+});
