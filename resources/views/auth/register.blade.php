@@ -1,144 +1,335 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register Member Page</title>
+    <title>Register - UP STORE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
+        * {
             margin: 0;
-            background-color: #1a1a1a;
-            font-family: Arial, sans-serif;
-            color: white;
-        }
-        .topbar {
-            background: #2b2b2b;
-            height: 100px;
-            display: flex;
-            align-items: center;
-            padding: 0 40px;
-        }
-        .topbar img {
-            height: 60px;
-            margin-right: 12px;
-        }
-        .topbar span {
-            font-weight: bold;
-            font-size: 28px;
-        }
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 80px;
-        }
-        h2 {
-            font-size: 36px;
-            margin-bottom: 40px;
-        }
-        form {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 350px;
-        }
-        input {
-            width: 100%;
-            padding: 14px;
-            margin: 12px 0;
-            border-radius: 8px;
-            border: none;
-            font-size: 16px;
-            text-align: center;
-            background-color: #d9d9d9;
-            color: #000;
+            padding: 0;
             box-sizing: border-box;
         }
-        button {
-            width: 100%;
-            padding: 14px;
-            background-color: #444;
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+            min-height: 100vh;
+            display: flex;
             color: white;
-            border: none;
+        }
+        
+        .container {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+        }
+        
+        /* Left Side - Logo */
+        .left-side {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #1a1a1a;
+            padding: 40px;
+        }
+        
+        .logo-section {
+            text-align: center;
+        }
+        
+        .logo-section h2 {
+            color: #888;
+            font-size: 18px;
+            font-weight: 400;
+            margin-bottom: 20px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .logo-icon {
+            font-size: 48px;
+            font-weight: 900;
+            font-style: italic;
+            letter-spacing: -2px;
+        }
+        
+        .logo-text {
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+        
+        /* Right Side - Form */
+        .right-side {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #2a2a2a;
+            padding: 40px;
+        }
+        
+        .form-container {
+            width: 100%;
+            max-width: 440px;
+        }
+        
+        .form-container h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #ccc;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: #3a3a3a;
+            border: 1px solid #4a4a4a;
             border-radius: 8px;
-            font-size: 16px;
-            margin-top: 15px;
+            color: white;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #FF8C00;
+            background: #404040;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
             cursor: pointer;
         }
-        button:hover {
-            background-color: #666;
-        }
-        .error {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 15px;
-            width: 350px;
-        }
-        .error ul {
+        
+        .checkbox-group label {
+            font-size: 13px;
+            color: #bbb;
             margin: 0;
-            padding-left: 20px;
         }
+        
+        .checkbox-group a {
+            color: #FF8C00;
+            text-decoration: none;
+        }
+        
+        .btn-register {
+            width: 100%;
+            padding: 14px;
+            background: #FF8C00;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .btn-register:hover {
+            background: #ff9d1f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 140, 0, 0.4);
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 24px 0;
+            color: #888;
+            font-size: 14px;
+        }
+        
+        .btn-google {
+            width: 100%;
+            padding: 14px;
+            background: #3a3a3a;
+            border: 1px solid #4a4a4a;
+            border-radius: 8px;
+            color: white;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-google:hover {
+            background: #404040;
+            border-color: #5a5a5a;
+        }
+        
         .login-link {
+            text-align: center;
             margin-top: 20px;
-            color: #ffcc00;
+            font-size: 14px;
+            color: #bbb;
         }
+        
         .login-link a {
-            color: #ffcc00;
+            color: white;
+            text-decoration: underline;
+            font-weight: 500;
+        }
+        
+        .error-message {
+            background: #ff4444;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .error-message ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .error-message li {
+            margin: 4px 0;
+        }
+        
+        @media (max-width: 968px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .left-side {
+                min-height: 200px;
+            }
+            
+            .right-side {
+                padding: 30px 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Top Bar -->
-    <div class="topbar">
-        <img src="{{ asset('images/logo.png') }}" alt="UP Store Logo">
-        <span>Game Topup</span>
-    </div>
-
-    <!-- Register Form -->
     <div class="container">
-        <h2>Register Member</h2>
-
-        @if($errors->any())
-            <div class="error">
-                <ul>
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
+        <!-- Left Side - Logo -->
+        <div class="left-side">
+            <div class="logo-section">
+                <h2>Welcome to</h2>
+                <div class="logo">
+                    <span class="logo-icon">UP</span>
+                    <span class="logo-text">STORE</span>
+                </div>
             </div>
-        @endif
-
-        <form method="POST" action="{{ route('register') }}">
-            @csrf
-            <input type="text" 
-                   name="username" 
-                   placeholder="Masukkan Nama" 
-                   value="{{ old('username') }}"
-                   required>
-            
-            <input type="text" 
-                   name="phone" 
-                   placeholder="Masukkan Nomor Telepon" 
-                   value="{{ old('phone') }}"
-                   required>
-            
-            <input type="password" 
-                   name="password" 
-                   placeholder="Masukkan Password" 
-                   required>
-            
-            <input type="password" 
-                   name="password_confirmation" 
-                   placeholder="Ulangi Password" 
-                   required>
-            
-            <button type="submit">Daftar</button>
-        </form>
-
-        <div class="login-link">
-            Sudah punya akun? <a href="{{ route('login') }}">Login di sini</a>
+        </div>
+        
+        <!-- Right Side - Form -->
+        <div class="right-side">
+            <div class="form-container">
+                <h1>Create your account</h1>
+                
+                @if($errors->any())
+                    <div class="error-message">
+                        <ul>
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+                
+                <form method="POST" action="{{ route('register') }}">
+                    @csrf
+                    
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" 
+                               name="username" 
+                               value="{{ old('username') }}"
+                               placeholder="Enter your username"
+                               required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>WhatsApp Number</label>
+                        <input type="text" 
+                               name="phone" 
+                               value="{{ old('phone') }}"
+                               placeholder="Enter your WhatsApp number"
+                               required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" 
+                               name="email" 
+                               value="{{ old('email') }}"
+                               placeholder="Enter your email address"
+                               required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" 
+                                   name="password" 
+                                   placeholder="Enter password"
+                                   required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Confirm Password</label>
+                            <input type="password" 
+                                   name="password_confirmation" 
+                                   placeholder="Confirm password"
+                                   required>
+                        </div>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="terms" required>
+                        <label for="terms">
+                            I agree to <a href="#">Terms & Privacy Policy</a>
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn-register">Register</button>
+                </form>
+                
+                <div class="divider">Already have an account? <a href="{{ route('login') }}" style="color: white; text-decoration: underline;">Login</a></div>
+                
+                <button class="btn-google" onclick="alert('Google Sign-in coming soon!')">
+                    Sign up with Google
+                </button>
+            </div>
         </div>
     </div>
 </body>
