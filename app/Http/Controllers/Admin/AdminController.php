@@ -7,8 +7,10 @@ use App\Models\Game;
 use App\Models\User;
 use App\Models\Transaction;
 use App\Models\TopupOption;
+use App\Models\AuditLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
@@ -50,7 +52,17 @@ class AdminController extends Controller
             'logo' => 'nullable|string',
         ]);
         
-        Game::create($request->all());
+        $game = Game::create($request->all());
+        
+        // Log action
+        AuditLog::log(
+            'create_game',
+            "Created game: {$game->name}",
+            'Game',
+            $game->id,
+            null,
+            $game->toArray()
+        );
         
         return redirect()->route('admin.games')->with('success', 'Game created successfully!');
     }
@@ -70,7 +82,18 @@ class AdminController extends Controller
         ]);
         
         $game = Game::findOrFail($id);
+        $oldValues = $game->toArray();
         $game->update($request->all());
+        
+        // Log action
+        AuditLog::log(
+            'update_game',
+            "Updated game: {$game->name}",
+            'Game',
+            $game->id,
+            $oldValues,
+            $game->fresh()->toArray()
+        );
         
         return redirect()->route('admin.games')->with('success', 'Game updated successfully!');
     }
@@ -78,7 +101,20 @@ class AdminController extends Controller
     public function deleteGame($id)
     {
         $game = Game::findOrFail($id);
+        $gameName = $game->name;
+        $oldValues = $game->toArray();
+        
         $game->delete();
+        
+        // Log action
+        AuditLog::log(
+            'delete_game',
+            "Deleted game: {$gameName}",
+            'Game',
+            $id,
+            $oldValues,
+            null
+        );
         
         return redirect()->route('admin.games')->with('success', 'Game deleted successfully!');
     }
@@ -192,4 +228,56 @@ class AdminController extends Controller
         
         return view('admin.transactions.index', compact('transactions'));
     }
+
+    // Audit Logs
+    public function auditLogs()
+{
+    $logs = AuditLog::with('user')
+        ->orderBy('created_at', 'desc')
+        ->paginate(50);
+    
+    return view('admin.audit-logs', compact('logs'));
+}
+
+public function unlockUser($id)
+{
+    $user = User::findOrFail($id);
+    $user->unlockAccount();
+    
+    return redirect()->route('admin.users')->with('success', 'User account unlocked successfully!');
+}
+
+public function resetUserPassword(Request $request, $id)
+{
+    $request->validate([
+        'new_password' => [
+            'required',
+            'string',
+            'min:8',
+            'confirmed',
+            'regex:/[a-z]/',
+            'regex:/[A-Z]/',
+            'regex:/[0-9]/',
+            'regex:/[@$!%*#?&]/',
+        ],
+    ], [
+        'new_password.regex' => 'Password must contain uppercase, lowercase, number, and special character.',
+    ]);
+    
+    $user = User::findOrFail($id);
+    $oldEmail = $user->email ?? $user->phone;
+    
+    $user->password_hash = Hash::make($request->new_password);
+    $user->save();
+    
+    // Log action
+    AuditLog::log(
+        'reset_user_password',
+        "Admin reset password for user: {$user->username}",
+        'User',
+        $user->id
+    );
+    
+    return redirect()->route('admin.users')->with('success', 'Password reset successfully!');
+}
 }

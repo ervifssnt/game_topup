@@ -44,8 +44,10 @@ Route::middleware('auth')->group(function () {
 });
 
 // Admin Routes (separate from auth group)
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminController::class, 'index'])->name('dashboard');
+    Route::post('/users/{id}/unlock', [AdminController::class, 'unlockUser'])->name('users.unlock');
+    Route::post('/users/{id}/reset-password', [AdminController::class, 'resetUserPassword'])->name('users.reset-password');
     
     // Games
     Route::get('/games', [AdminController::class, 'games'])->name('games');
@@ -71,4 +73,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     
     // Transactions
     Route::get('/transactions', [AdminController::class, 'transactions'])->name('transactions');
+
+    // Audit Logs
+    Route::get('/audit-logs', [AdminController::class, 'auditLogs'])->name('audit-logs');
 });

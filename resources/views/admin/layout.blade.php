@@ -443,7 +443,13 @@
                     <span>Back to Site</span>
                 </a>
             </li>
-        </ul>
+            <li class="menu-item">
+                <a href="{{ route('admin.audit-logs') }}" class="menu-link {{ request()->routeIs('admin.audit-logs') ? 'active' : '' }}">
+                  <span class="menu-icon">📋</span>
+                  <span>Audit Logs</span>
+            </a>
+        </li>
+    </ul>
     </div>
     
     <!-- Main Content -->

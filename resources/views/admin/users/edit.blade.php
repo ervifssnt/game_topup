@@ -50,6 +50,29 @@
                 <a href="{{ route('admin.users') }}" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
+
+        <hr style="margin: 30px 0; border: 1px solid #ddd;">
+
+<h3 style="margin-bottom: 20px;">Reset Password</h3>
+
+<form action="{{ route('admin.users.reset-password', $user->id) }}" method="POST">
+    @csrf
+    
+    <div class="form-group">
+        <label>New Password</label>
+        <input type="password" name="new_password" class="form-control" required>
+        <small style="color: #666; font-size: 13px;">Must be at least 8 characters with uppercase, lowercase, number, and special character</small>
+    </div>
+    
+    <div class="form-group">
+        <label>Confirm New Password</label>
+        <input type="password" name="new_password_confirmation" class="form-control" required>
+    </div>
+    
+            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to reset this user\'s password?')">
+                Reset Password
+            </button>
+        </form>
     </div>
 </div>
 @endsection
