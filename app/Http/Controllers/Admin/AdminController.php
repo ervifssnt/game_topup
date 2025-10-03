@@ -280,4 +280,89 @@ public function resetUserPassword(Request $request, $id)
     
     return redirect()->route('admin.users')->with('success', 'Password reset successfully!');
 }
+
+// Topup Requests Management
+public function topupRequests()
+{
+    $requests = TopupRequest::with('user', 'processedBy')
+        ->orderByRaw("FIELD(status, 'pending', 'approved', 'rejected')")
+        ->orderBy('created_at', 'desc')
+        ->paginate(20);
+        
+    return view('admin.topup-requests.index', compact('requests'));
+}
+
+public function approveTopup(Request $request, $id)
+{
+    $topupRequest = TopupRequest::findOrFail($id);
+    
+    if ($topupRequest->status !== 'pending') {
+        return back()->with('error', 'This request has already been processed.');
+    }
+    
+    $request->validate([
+        'admin_notes' => 'nullable|string|max:500',
+    ]);
+    
+    DB::beginTransaction();
+    
+    try {
+        // Add balance to user
+        $user = $topupRequest->user;
+        $user->addBalance($topupRequest->amount);
+        
+        // Update request status
+        $topupRequest->update([
+            'status' => 'approved',
+            'processed_by' => Auth::id(),
+            'admin_notes' => $request->admin_notes,
+            'processed_at' => now(),
+        ]);
+        
+        // Log action
+        AuditLog::log(
+            'approve_topup',
+            "Approved top-up request for {$user->username}: Rp " . number_format($topupRequest->amount, 0, ',', '.'),
+            'TopupRequest',
+            $topupRequest->id
+        );
+        
+        DB::commit();
+        
+        return redirect()->route('admin.topup-requests')->with('success', 'Top-up request approved and balance added!');
+    } catch (\Exception $e) {
+        DB::rollback();
+        return back()->with('error', 'Failed to process top-up request.');
+    }
+}
+
+public function rejectTopup(Request $request, $id)
+{
+    $topupRequest = TopupRequest::findOrFail($id);
+    
+    if ($topupRequest->status !== 'pending') {
+        return back()->with('error', 'This request has already been processed.');
+    }
+    
+    $request->validate([
+        'admin_notes' => 'required|string|max:500',
+    ]);
+    
+    $topupRequest->update([
+        'status' => 'rejected',
+        'processed_by' => Auth::id(),
+        'admin_notes' => $request->admin_notes,
+        'processed_at' => now(),
+    ]);
+    
+    // Log action
+    AuditLog::log(
+        'reject_topup',
+        "Rejected top-up request for {$topupRequest->user->username}: Rp " . number_format($topupRequest->amount, 0, ',', '.'),
+        'TopupRequest',
+        $topupRequest->id
+    );
+    
+    return redirect()->route('admin.topup-requests')->with('success', 'Top-up request rejected.');
+}
 }

@@ -41,6 +41,11 @@ Route::middleware('auth')->group(function () {
     
     // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+    // Wallet Top-Up
+    Route::get('/topup-wallet', [App\Http\Controllers\TopupController::class, 'showForm'])->name('topup.form');
+    Route::post('/topup-wallet', [App\Http\Controllers\TopupController::class, 'submitRequest'])->name('topup.submit');
+    Route::get('/topup-history', [App\Http\Controllers\TopupController::class, 'history'])->name('topup.history');
 });
 
 // Admin Routes (separate from auth group)
@@ -48,7 +53,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/', [AdminController::class, 'index'])->name('dashboard');
     Route::post('/users/{id}/unlock', [AdminController::class, 'unlockUser'])->name('users.unlock');
     Route::post('/users/{id}/reset-password', [AdminController::class, 'resetUserPassword'])->name('users.reset-password');
-    
+    // Topup Requests
+    Route::get('/topup-requests', [AdminController::class, 'topupRequests'])->name('topup-requests');
+    Route::post('/topup-requests/{id}/approve', [AdminController::class, 'approveTopup'])->name('topup-requests.approve');
+    Route::post('/topup-requests/{id}/reject', [AdminController::class, 'rejectTopup'])->name('topup-requests.reject');
     // Games
     Route::get('/games', [AdminController::class, 'games'])->name('games');
     Route::get('/games/create', [AdminController::class, 'createGame'])->name('games.create');
