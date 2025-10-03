@@ -142,14 +142,29 @@
     <p style="color: #999; margin-bottom: 20px; font-size: 14px;">Penawaran Terbatas! Disc hingga 50%</p>
     
     <div class="flash-sale-grid">
-        <!-- Placeholder cards - will be filled with actual games -->
-        @for($i = 0; $i < 3; $i++)
-            <div class="flash-card">
-                <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%); display: flex; align-items: center; justify-content: center; color: #666; font-size: 14px;">
-                    Coming Soon
+        @if($games->count() >= 3)
+            @foreach($games->take(3) as $game)
+                <a href="{{ route('topup', $game->id) }}" style="text-decoration: none;">
+                    <div class="flash-card">
+                        @if($game->logo)
+                            <img src="{{ asset($game->logo) }}" alt="{{ $game->name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        @else
+                            <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%); display: flex; align-items: center; justify-content: center; color: #666; font-size: 14px;">
+                                {{ $game->name }}
+                            </div>
+                        @endif
+                    </div>
+                </a>
+            @endforeach
+        @else
+            @for($i = 0; $i < 3; $i++)
+                <div class="flash-card">
+                    <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%); display: flex; align-items: center; justify-content: center; color: #666; font-size: 14px;">
+                        Coming Soon
+                    </div>
                 </div>
-            </div>
-        @endfor
+            @endfor
+        @endif
     </div>
 </section>
 

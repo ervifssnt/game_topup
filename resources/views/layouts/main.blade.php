@@ -329,9 +329,9 @@
             </a>
             
             <ul class="nav-links">
-                <li><a href="{{ route('home') }}" class="active">Home</a></li>
-                <li><a href="#">Catalog</a></li>
-                <li><a href="#">Riwayat</a></li>
+                <li><a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a></li>
+                <li><a href="{{ route('profile.dashboard') }}" class="{{ request()->routeIs('profile.dashboard') ? 'active' : '' }}">Dashboard</a></li>
+                <li><a href="{{ route('profile.history') }}" class="{{ request()->routeIs('profile.history') ? 'active' : '' }}">Riwayat</a></li>
             </ul>
         </div>
         

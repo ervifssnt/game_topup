@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 // Guest routes (not logged in)
@@ -24,6 +25,10 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     // Homepage
     Route::get('/', [GameController::class, 'index'])->name('home');
+    
+    // Profile & Dashboard
+    Route::get('/dashboard', [ProfileController::class, 'index'])->name('profile.dashboard');
+    Route::get('/riwayat', [ProfileController::class, 'history'])->name('profile.history');
     
     // Topup
     Route::get('/topup/{id}', [GameController::class, 'topup'])->name('topup');
