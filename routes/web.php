@@ -23,22 +23,22 @@ Route::middleware('guest')->group(function () {
 });
 
 // Authenticated routes (must be logged in)
-Route::middleware('auth')->group(function () {
+    Route::middleware(['auth', 'session.timeout'])->group(function () {
     // Homepage
     Route::get('/', [GameController::class, 'index'])->name('home');
-    
+
     // Profile & Dashboard
     Route::get('/dashboard', [ProfileController::class, 'index'])->name('profile.dashboard');
     Route::get('/riwayat', [ProfileController::class, 'history'])->name('profile.history');
-    
+
     // Topup
     Route::get('/topup/{id}', [GameController::class, 'topup'])->name('topup');
     Route::post('/topup', [TransactionController::class, 'store'])->name('topup.store');
-    
+
     // Checkout
     Route::get('/checkout/{id}', [TransactionController::class, 'checkout'])->name('checkout');
     Route::post('/checkout/process', [TransactionController::class, 'processCheckout'])->name('checkout.process');
-    
+
     // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -47,6 +47,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/topup-wallet', [App\Http\Controllers\TopupController::class, 'submitRequest'])->name('topup.submit');
     Route::get('/topup-history', [App\Http\Controllers\TopupController::class, 'history'])->name('topup.history');
 });
+
+// Admin Routes
+    Route::middleware(['auth', 'session.timeout', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    // ... admin routes
+});
+
 
 // Admin Routes (separate from auth group)
     Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
