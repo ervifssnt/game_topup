@@ -4,7 +4,7 @@ use Illuminate\Support\Str;
 
 return [
 
-    'driver' => env('SESSION_DRIVER', 'database'),
+    'driver' => env('SESSION_DRIVER', 'file'),
 
     // Session lifetime in minutes
     'lifetime' => (int) env('SESSION_LIFETIME', 120), // default 2 hours
