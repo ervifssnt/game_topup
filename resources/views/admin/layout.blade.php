@@ -455,6 +455,12 @@
                     <span>Top-Up Requests</span>
             </a>
         </li>
+        <li class="menu-item">
+    <a href="{{ route('admin.password-reset-requests') }}" class="menu-link {{ request()->routeIs('admin.password-reset-requests') ? 'active' : '' }}">
+        <span class="menu-icon">🔑</span>
+        <span>Password Resets</span>
+    </a>
+</li>
     </ul>
     </div>
     

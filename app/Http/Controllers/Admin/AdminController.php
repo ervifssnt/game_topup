@@ -367,4 +367,90 @@ public function rejectTopup(Request $request, $id)
     
     return redirect()->route('admin.topup-requests')->with('success', 'Top-up request rejected.');
 }
+
+// Password Reset Requests
+public function passwordResetRequests()
+{
+    $requests = \App\Models\PasswordResetRequest::with('user', 'processedBy')
+        ->orderByRaw("FIELD(status, 'pending', 'approved', 'rejected')")
+        ->orderBy('created_at', 'desc')
+        ->paginate(20);
+        
+    return view('admin.password-reset-requests.index', compact('requests'));
+}
+
+public function approvePasswordReset(Request $request, $id)
+{
+    $resetRequest = \App\Models\PasswordResetRequest::findOrFail($id);
+    
+    if ($resetRequest->status !== 'pending') {
+        return back()->with('error', 'This request has already been processed.');
+    }
+    
+    $request->validate([
+        'new_password' => [
+            'required',
+            'string',
+            'min:8',
+            'confirmed',
+            'regex:/[a-z]/',
+            'regex:/[A-Z]/',
+            'regex:/[0-9]/',
+            'regex:/[@$!%*#?&]/',
+        ],
+    ], [
+        'new_password.regex' => 'Password must contain uppercase, lowercase, number, and special character.',
+    ]);
+    
+    $user = $resetRequest->user;
+    $user->password_hash = \Hash::make($request->new_password);
+    $user->save();
+    
+    $resetRequest->update([
+        'status' => 'approved',
+        'processed_by' => \Auth::id(),
+        'admin_notes' => $request->admin_notes,
+        'processed_at' => now(),
+    ]);
+    
+    AuditLog::log(
+        'password_reset_approved',
+        "Admin approved password reset for user: {$user->username}",
+        'PasswordResetRequest',
+        $resetRequest->id
+    );
+    
+    return redirect()->route('admin.password-reset-requests')
+        ->with('success', 'Password reset approved and new password set!');
+}
+
+public function rejectPasswordReset(Request $request, $id)
+{
+    $resetRequest = \App\Models\PasswordResetRequest::findOrFail($id);
+    
+    if ($resetRequest->status !== 'pending') {
+        return back()->with('error', 'This request has already been processed.');
+    }
+    
+    $request->validate([
+        'admin_notes' => 'required|string|max:500',
+    ]);
+    
+    $resetRequest->update([
+        'status' => 'rejected',
+        'processed_by' => \Auth::id(),
+        'admin_notes' => $request->admin_notes,
+        'processed_at' => now(),
+    ]);
+    
+    AuditLog::log(
+        'password_reset_rejected',
+        "Admin rejected password reset for user: {$resetRequest->user->username}",
+        'PasswordResetRequest',
+        $resetRequest->id
+    );
+    
+    return redirect()->route('admin.password-reset-requests')
+        ->with('success', 'Password reset request rejected.');
+}
 }

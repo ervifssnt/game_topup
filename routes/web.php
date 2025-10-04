@@ -6,8 +6,9 @@ use App\Http\Controllers\GameController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TopupController;
-use App\Http\Controllers\TwoFactorController;  // ← MAKE SURE THIS IS HERE
+use App\Http\Controllers\TwoFactorController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\PasswordResetController; // ← make sure this is imported
 
 // Public routes
 Route::get('/', [GameController::class, 'index'])->name('home');
@@ -20,11 +21,15 @@ Route::get('/register', [AuthController::class, 'showRegister'])->name('register
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Password Reset
-Route::get('/forgot-password', [App\Http\Controllers\PasswordResetController::class, 'showForgotForm'])->name('password.request');
-Route::post('/forgot-password', [App\Http\Controllers\PasswordResetController::class, 'sendResetLink'])->name('password.email');
-Route::get('/reset-password/{token}', [App\Http\Controllers\PasswordResetController::class, 'showResetForm'])->name('password.reset');
-Route::post('/reset-password', [App\Http\Controllers\PasswordResetController::class, 'resetPassword'])->name('password.update');
+// Built-in Password Reset (default Laravel style)
+Route::get('/forgot-password', [PasswordResetController::class, 'showForgotForm'])->name('password.request');
+Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLink'])->name('password.email');
+Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])->name('password.update');
+
+// Custom Password Reset Request (your snippet)
+Route::get('/forgot-password', [PasswordResetController::class, 'showRequestForm'])->name('password.request');
+Route::post('/forgot-password', [PasswordResetController::class, 'submitRequest'])->name('password.request.submit');
 
 // 2FA Login Verification (accessible without full auth)
 Route::get('/2fa/verify', [AuthController::class, 'show2FAVerify'])->name('2fa.verify');
@@ -53,6 +58,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/2fa/disable', [TwoFactorController::class, 'disable'])->name('2fa.disable');
     Route::get('/2fa/recovery', [TwoFactorController::class, 'showRecoveryCodes'])->name('2fa.recovery');
     Route::post('/2fa/recovery/regenerate', [TwoFactorController::class, 'regenerateRecoveryCodes'])->name('2fa.recovery.regenerate');
+
+    // Password Reset Status (Authenticated)
+    Route::get('/password-reset-status', [PasswordResetController::class, 'viewStatus'])->name('password.reset.status');
 });
 
 // Admin routes
@@ -93,4 +101,9 @@ Route::middleware(['auth', 'is_admin'])->prefix('admin')->group(function () {
     Route::get('/topup-requests', [AdminController::class, 'topupRequests'])->name('admin.topup-requests');
     Route::post('/topup-requests/{id}/approve', [AdminController::class, 'approveTopup'])->name('admin.topup-requests.approve');
     Route::post('/topup-requests/{id}/reject', [AdminController::class, 'rejectTopup'])->name('admin.topup-requests.reject');
+
+    // Admin Password Reset Requests
+    Route::get('/password-reset-requests', [AdminController::class, 'passwordResetRequests'])->name('admin.password-reset-requests');
+    Route::post('/password-reset-requests/{id}/approve', [AdminController::class, 'approvePasswordReset'])->name('admin.password-reset-requests.approve');
+    Route::post('/password-reset-requests/{id}/reject', [AdminController::class, 'rejectPasswordReset'])->name('admin.password-reset-requests.reject');
 });

@@ -12,14 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'admin' => \App\Http\Middleware\IsAdmin::class,
-            'session.timeout' => \App\Http\Middleware\SessionTimeout::class,
+            'is_admin' => \App\Http\Middleware\IsAdmin::class,
         ]);
-
-        $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        // You can leave this empty or add custom exception handling logic.
-        // It ensures Laravel binds App\Exceptions\Handler properly.
-    })
-    ->create();
+        //
+    })->create();
