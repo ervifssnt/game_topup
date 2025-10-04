@@ -335,22 +335,25 @@
             </ul>
         </div>
         
-        <div class="nav-right">
-            <div class="search-box">
-                <input type="text" placeholder="Search for games...">
+<div class="nav-right">
+    <div class="search-box">
+        <input type="text" placeholder="Search for games...">
+    </div>
+    
+    @auth
+        <div class="user-menu">
+            <div class="user-balance">
+                Balance: <span>Rp {{ number_format(Auth::user()->balance, 0, ',', '.') }}</span>
             </div>
-            
-            @auth
-                <div class="user-menu">
-                    <div class="user-balance">
-                        Balance: <span>Rp {{ number_format(Auth::user()->balance, 0, ',', '.') }}</span>
-                    </div>
-                    <form action="{{ route('logout') }}" method="POST" style="display: inline;">
-                        @csrf
-                        <button type="submit" class="btn-logout">Logout</button>
-                    </form>
-                </div>
-            @else
+            <a href="{{ route('topup.form') }}" class="btn-topup" style="background: #28a745; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 600;">
+                + Top-Up
+            </a>
+            <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+                @csrf
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </div>
+    @else
                 <a href="{{ route('login') }}" class="btn-signin">Sign in</a>
             @endauth
         </div>

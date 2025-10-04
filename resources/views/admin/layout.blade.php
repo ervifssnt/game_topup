@@ -449,6 +449,12 @@
                   <span>Audit Logs</span>
             </a>
         </li>
+            <li class="menu-item">
+                <a href="{{ route('admin.topup-requests') }}" class="menu-link {{ request()->routeIs('admin.topup-requests') ? 'active' : '' }}">
+                    <span class="menu-icon">💰</span>
+                    <span>Top-Up Requests</span>
+            </a>
+        </li>
     </ul>
     </div>
     
