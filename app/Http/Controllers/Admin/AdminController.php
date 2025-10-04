@@ -403,26 +403,31 @@ public function approvePasswordReset(Request $request, $id)
     ]);
     
     $user = $resetRequest->user;
-    $user->password_hash = \Hash::make($request->new_password);
-    $user->save();
-    
-    $resetRequest->update([
-        'status' => 'approved',
-        'processed_by' => \Auth::id(),
-        'admin_notes' => $request->admin_notes,
-        'processed_at' => now(),
-    ]);
-    
-    AuditLog::log(
-        'password_reset_approved',
-        "Admin approved password reset for user: {$user->username}",
-        'PasswordResetRequest',
-        $resetRequest->id
-    );
-    
-    return redirect()->route('admin.password-reset-requests')
-        ->with('success', 'Password reset approved and new password set!');
+ // Find this section (after password is reset):
+$user->password_hash = \Hash::make($request->new_password);
+$user->save();
+
+$resetRequest->update([
+    'status' => 'approved',
+    'processed_by' => \Auth::id(),
+    'admin_notes' => $request->admin_notes,
+    'processed_at' => now(),
+]);
+
+AuditLog::log(
+    'password_reset_approved',
+    "Admin approved password reset for user: {$user->username}",
+    'PasswordResetRequest',
+    $resetRequest->id
+);
+
+// ADD THIS - Send email notification
+if ($user->email) {
+    \Mail::to($user->email)->send(new \App\Mail\PasswordResetApprovedMail($user));
 }
+
+return redirect()->route('admin.password-reset-requests')
+    ->with('success', 'Password reset approved and new password set!');}
 
 public function rejectPasswordReset(Request $request, $id)
 {

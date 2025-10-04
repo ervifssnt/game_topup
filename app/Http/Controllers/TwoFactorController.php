@@ -90,10 +90,38 @@ class TwoFactorController extends Controller
                 $user->id
             );
 
+            // Send email notification
+        if ($user->email) {
+        \Mail::to($user->email)->send(new \App\Mail\TwoFactorEnabledMail($user));
+}
+
             return redirect()->route('2fa.show')
                 ->with('success', '2FA enabled successfully!')
                 ->with('recovery_codes', $recoveryCodes);
         }
+
+        // Find this section (around line 70-80):
+// Enable 2FA
+$user->google2fa_enabled = true;
+$user->recovery_codes = $recoveryCodes;
+$user->save();
+
+// Log action
+AuditLog::log(
+    '2fa_enabled',
+    "User enabled Two-Factor Authentication: {$user->username}",
+    'User',
+    $user->id
+);
+
+// ADD THIS - Send email notification
+if ($user->email) {
+    \Mail::to($user->email)->send(new \App\Mail\TwoFactorEnabledMail($user));
+}
+
+return redirect()->route('2fa.show')
+    ->with('success', '2FA enabled successfully!')
+    ->with('recovery_codes', $recoveryCodes);
 
         return back()->withErrors(['code' => 'Invalid verification code. Please try again.']);
     }
@@ -118,18 +146,26 @@ class TwoFactorController extends Controller
         $user->recovery_codes = null;
         $user->save();
 
-        // Log action
-        AuditLog::log(
-            '2fa_disabled',
-            "User disabled Two-Factor Authentication: {$user->username}",
-            'User',
-            $user->id
-        );
+// Log action
+AuditLog::log(
+    '2fa_disabled',
+    "User disabled Two-Factor Authentication: {$user->username}",
+    'User',
+    $user->id
+);
 
-        return redirect()->route('2fa.show')
-            ->with('success', '2FA has been disabled.');
+// ADD THIS - Send security alert
+if ($user->email) {
+    \Mail::to($user->email)->send(new \App\Mail\SecurityAlertMail(
+        $user,
+        'Two-Factor Authentication Disabled',
+        ['message' => 'Two-Factor Authentication has been disabled on your account. If this wasn\'t you, secure your account immediately.']
+    ));
+}
+
+return redirect()->route('2fa.show')
+    ->with('success', '2FA has been disabled.');
     }
-
     // Show recovery codes
     public function showRecoveryCodes()
     {
