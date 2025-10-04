@@ -340,20 +340,23 @@
         <input type="text" placeholder="Search for games...">
     </div>
     
-    @auth
-        <div class="user-menu">
-            <div class="user-balance">
-                Balance: <span>Rp {{ number_format(Auth::user()->balance, 0, ',', '.') }}</span>
-            </div>
-            <a href="{{ route('topup.form') }}" class="btn-topup" style="background: #28a745; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 600;">
-                + Top-Up
-            </a>
-            <form action="{{ route('logout') }}" method="POST" style="display: inline;">
-                @csrf
-                <button type="submit" class="btn-logout">Logout</button>
-            </form>
+@auth
+    <div class="user-menu">
+        <div class="user-balance">
+            Balance: <span>Rp {{ number_format(Auth::user()->balance, 0, ',', '.') }}</span>
         </div>
-    @else
+        <a href="{{ route('topup.form') }}" class="btn-topup" style="background: #28a745; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 600;">
+            + Top-Up
+        </a>
+        <a href="{{ route('2fa.show') }}" style="padding: 8px 16px; background: transparent; border: 1px solid #4a4a4a; border-radius: 6px; color: white; font-size: 14px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: all 0.3s;">
+            🔒 2FA
+        </a>
+        <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+            @csrf
+            <button type="submit" class="btn-logout">Logout</button>
+        </form>
+    </div>
+@else
                 <a href="{{ route('login') }}" class="btn-signin">Sign in</a>
             @endauth
         </div>

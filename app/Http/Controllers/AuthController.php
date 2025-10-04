@@ -10,9 +10,17 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
+use PragmaRX\Google2FA\Google2FA;
 
 class AuthController extends Controller
 {
+    protected $google2fa;
+
+    public function __construct()
+    {
+        $this->google2fa = new Google2FA();
+    }
+
     // Show register form
     public function showRegister()
     {
@@ -30,10 +38,10 @@ class AuthController extends Controller
                 'string',
                 'min:8',
                 'confirmed',
-                'regex:/[a-z]/',      // at least one lowercase
-                'regex:/[A-Z]/',      // at least one uppercase  
-                'regex:/[0-9]/',      // at least one number
-                'regex:/[@$!%*#?&]/', // at least one special character
+                'regex:/[a-z]/',
+                'regex:/[A-Z]/',
+                'regex:/[0-9]/',
+                'regex:/[@$!%*#?&]/',
             ],
         ], [
             'phone.unique' => 'Nomor telepon sudah terdaftar.',
@@ -74,78 +82,161 @@ class AuthController extends Controller
 
     // Handle login
     public function login(Request $request)
-{
-    $request->validate([
-        'email' => 'required|email',
-        'password' => 'required|string',
-    ]);
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ]);
 
-    // Rate limiting key
-    $key = 'login:' . $request->email . '|' . $request->ip();
+        // Rate limiting key
+        $key = 'login:' . $request->email . '|' . $request->ip();
 
-    // Check rate limit
-    if (RateLimiter::tooManyAttempts($key, 5)) {
-    $seconds = RateLimiter::availableIn($key);
-    $this->logLoginAttempt($request->email, false);
-    
-    // Still increment failed attempts even when rate limited
-    $user = User::where('email', $request->email)->first();
-    if ($user) {
-        $user->incrementFailedAttempts();
-    }
-    
-    throw ValidationException::withMessages([
-        'email' => ["Too many login attempts. Please try again in {$seconds} seconds."],
-    ]);
-}
+        // Check rate limit
+        if (RateLimiter::tooManyAttempts($key, 5)) {
+            $seconds = RateLimiter::availableIn($key);
+            $this->logLoginAttempt($request->email, false);
+            
+            $user = User::where('email', $request->email)->first();
+            if ($user) {
+                $user->incrementFailedAttempts();
+            }
+            
+            throw ValidationException::withMessages([
+                'email' => ["Too many login attempts. Please try again in {$seconds} seconds."],
+            ]);
+        }
 
-    $user = User::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)->first();
 
-    // Check if account is locked
-    if ($user && $user->isLocked()) {
+        // Check if account is locked
+        if ($user && $user->isLocked()) {
+            $this->logLoginAttempt($request->email, false);
+            
+            $minutesLeft = ceil(30 - now()->diffInMinutes($user->locked_at));
+            
+            throw ValidationException::withMessages([
+                'email' => ["Account is locked due to too many failed login attempts. Try again in {$minutesLeft} minutes or contact administrator."],
+            ]);
+        }
+
+        // Check credentials
+        if ($user && Hash::check($request->password, $user->password_hash)) {
+            // Check if 2FA is enabled
+            if ($user->has2FAEnabled()) {
+                // Store user ID in session for 2FA verification
+                session(['2fa:user:id' => $user->id]);
+                session(['2fa:remember' => $request->filled('remember')]);
+                
+                return redirect()->route('2fa.verify');
+            }
+
+            // No 2FA, login directly
+            RateLimiter::clear($key);
+            $this->logLoginAttempt($request->email, true);
+            $user->resetFailedAttempts();
+            
+            AuditLog::log(
+                'login',
+                "User logged in: {$user->username}",
+                'User',
+                $user->id
+            );
+
+            Auth::login($user, $request->filled('remember'));
+            $request->session()->regenerate();
+
+            return redirect()->intended(route('home'));
+        }
+
+        // Failed login
+        RateLimiter::hit($key, 60);
         $this->logLoginAttempt($request->email, false);
         
-        $minutesLeft = ceil(30 - now()->diffInMinutes($user->locked_at));
-        
-        throw ValidationException::withMessages([
-            'email' => ["Account is locked due to too many failed login attempts. Try again in {$minutesLeft} minutes or contact administrator."],
+        if ($user) {
+            $user->incrementFailedAttempts();
+        }
+
+        return back()->withErrors([
+            'email' => 'Invalid email or password.',
+        ])->withInput($request->only('email'));
+    }
+
+    // Show 2FA verification page
+    public function show2FAVerify()
+    {
+        if (!session()->has('2fa:user:id')) {
+            return redirect()->route('login');
+        }
+
+        return view('auth.two-factor-verify');
+    }
+
+    // Verify 2FA code
+    public function verify2FA(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|string',
         ]);
+
+        if (!session()->has('2fa:user:id')) {
+            return redirect()->route('login');
+        }
+
+        $user = User::findOrFail(session('2fa:user:id'));
+        $code = str_replace(' ', '', $request->code);
+
+        // Check if it's a recovery code (8 characters)
+        if (strlen($code) === 8) {
+            if ($user->useRecoveryCode($code)) {
+                $this->complete2FALogin($user, $request);
+                
+                AuditLog::log(
+                    '2fa_recovery_used',
+                    "User logged in using recovery code: {$user->username}",
+                    'User',
+                    $user->id
+                );
+                
+                return redirect()->route('home')
+                    ->with('warning', 'You used a recovery code. Please regenerate your recovery codes.');
+            }
+
+            return back()->withErrors(['code' => 'Invalid recovery code.']);
+        }
+
+        // Verify TOTP code (6 digits)
+        $valid = $this->google2fa->verifyKey($user->google2fa_secret, $code);
+
+        if ($valid) {
+            $this->complete2FALogin($user, $request);
+            
+            AuditLog::log(
+                '2fa_login',
+                "User logged in with 2FA: {$user->username}",
+                'User',
+                $user->id
+            );
+            
+            return redirect()->intended(route('home'));
+        }
+
+        return back()->withErrors(['code' => 'Invalid verification code.']);
     }
 
-    // Check credentials
-    if ($user && Hash::check($request->password, $user->password_hash)) {
-        RateLimiter::clear($key);
-        $this->logLoginAttempt($request->email, true);
+    // Complete 2FA login
+    private function complete2FALogin($user, $request)
+    {
+        $remember = session('2fa:remember', false);
         
-        // Reset failed attempts on successful login
-        $user->resetFailedAttempts();
-        
-        AuditLog::log(
-            'login',
-            "User logged in: {$user->username}",
-            'User',
-            $user->id
-        );
-
-        Auth::login($user);
+        Auth::login($user, $remember);
         $request->session()->regenerate();
-
-        return redirect()->intended(route('home'));
+        
+        // Clear 2FA session data
+        session()->forget(['2fa:user:id', '2fa:remember']);
+        
+        $user->resetFailedAttempts();
     }
 
-    // Failed login
-    RateLimiter::hit($key, 60);
-    $this->logLoginAttempt($request->email, false);
-    
-    // Increment failed attempts if user exists
-    if ($user) {
-        $user->incrementFailedAttempts();
-    }
-
-    return back()->withErrors([
-        'email' => 'Invalid email or password.',
-    ])->withInput($request->only('email'));
-}
     // Handle logout
     public function logout(Request $request)
     {

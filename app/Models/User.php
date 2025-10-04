@@ -20,15 +20,22 @@ class User extends Authenticatable
         'locked_at',
         'locked_reason',
         'failed_login_attempts',
+        'google2fa_secret',
+        'google2fa_enabled',
+        'recovery_codes',
     ];
 
     protected $hidden = [
         'password_hash',
         'remember_token',
+        'google2fa_secret',
+        'recovery_codes',
     ];
 
     protected $casts = [
         'balance' => 'decimal:2',
+        'google2fa_enabled' => 'boolean',
+        'recovery_codes' => 'array',
     ];
 
     // Override default password column
@@ -125,5 +132,36 @@ class User extends Authenticatable
         }
 
         return $this->is_locked;
+    }
+
+    // 2FA Helper Methods
+    public function has2FAEnabled()
+    {
+        return $this->google2fa_enabled && !empty($this->google2fa_secret);
+    }
+
+    public function generateRecoveryCodes()
+    {
+        $codes = [];
+        for ($i = 0; $i < 8; $i++) {
+            $codes[] = strtoupper(substr(bin2hex(random_bytes(4)), 0, 8));
+        }
+        return $codes;
+    }
+
+    public function useRecoveryCode($code)
+    {
+        $codes = $this->recovery_codes ?? [];
+        $code = strtoupper($code);
+
+        if (in_array($code, $codes)) {
+            // Remove used code
+            $codes = array_values(array_diff($codes, [$code]));
+            $this->recovery_codes = $codes;
+            $this->save();
+            return true;
+        }
+
+        return false;
     }
 }

@@ -1,93 +1,96 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\TransactionController;
-use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TopupController;
+use App\Http\Controllers\TwoFactorController;  // ← MAKE SURE THIS IS HERE
 use App\Http\Controllers\Admin\AdminController;
-use Illuminate\Support\Facades\Route;
 
-// Guest routes (not logged in)
-Route::middleware('guest')->group(function () {
-    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login']);
-    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [AuthController::class, 'register']);
-    
-    // Password Reset Routes
-    Route::get('/forgot-password', [PasswordResetController::class, 'showForgotForm'])->name('password.request');
-    Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLink'])->name('password.email');
-    Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
-    Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])->name('password.update');
-});
+// Public routes
+Route::get('/', [GameController::class, 'index'])->name('home');
+Route::get('/topup/{id}', [GameController::class, 'topup'])->name('topup');
 
-// Authenticated routes (must be logged in)
-    Route::middleware(['auth', 'session.timeout'])->group(function () {
-    // Homepage
-    Route::get('/', [GameController::class, 'index'])->name('home');
+// Auth routes
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    // Profile & Dashboard
-    Route::get('/dashboard', [ProfileController::class, 'index'])->name('profile.dashboard');
-    Route::get('/riwayat', [ProfileController::class, 'history'])->name('profile.history');
+// Password Reset
+Route::get('/forgot-password', [App\Http\Controllers\PasswordResetController::class, 'showForgotForm'])->name('password.request');
+Route::post('/forgot-password', [App\Http\Controllers\PasswordResetController::class, 'sendResetLink'])->name('password.email');
+Route::get('/reset-password/{token}', [App\Http\Controllers\PasswordResetController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset-password', [App\Http\Controllers\PasswordResetController::class, 'resetPassword'])->name('password.update');
 
-    // Topup
-    Route::get('/topup/{id}', [GameController::class, 'topup'])->name('topup');
-    Route::post('/topup', [TransactionController::class, 'store'])->name('topup.store');
+// 2FA Login Verification (accessible without full auth)
+Route::get('/2fa/verify', [AuthController::class, 'show2FAVerify'])->name('2fa.verify');
+Route::post('/2fa/login', [AuthController::class, 'verify2FA'])->name('2fa.login');
 
-    // Checkout
-    Route::get('/checkout/{id}', [TransactionController::class, 'checkout'])->name('checkout');
-    Route::post('/checkout/process', [TransactionController::class, 'processCheckout'])->name('checkout.process');
-
-    // Logout
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-    // Wallet Top-Up
-    Route::get('/topup-wallet', [App\Http\Controllers\TopupController::class, 'showForm'])->name('topup.form');
-    Route::post('/topup-wallet', [App\Http\Controllers\TopupController::class, 'submitRequest'])->name('topup.submit');
-    Route::get('/topup-history', [App\Http\Controllers\TopupController::class, 'history'])->name('topup.history');
-});
-
-// Admin Routes
-    Route::middleware(['auth', 'session.timeout', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    // ... admin routes
-});
-
-
-// Admin Routes (separate from auth group)
-    Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/', [AdminController::class, 'index'])->name('dashboard');
-    Route::post('/users/{id}/unlock', [AdminController::class, 'unlockUser'])->name('users.unlock');
-    Route::post('/users/{id}/reset-password', [AdminController::class, 'resetUserPassword'])->name('users.reset-password');
-    // Topup Requests
-    Route::get('/topup-requests', [AdminController::class, 'topupRequests'])->name('topup-requests');
-    Route::post('/topup-requests/{id}/approve', [AdminController::class, 'approveTopup'])->name('topup-requests.approve');
-    Route::post('/topup-requests/{id}/reject', [AdminController::class, 'rejectTopup'])->name('topup-requests.reject');
-    // Games
-    Route::get('/games', [AdminController::class, 'games'])->name('games');
-    Route::get('/games/create', [AdminController::class, 'createGame'])->name('games.create');
-    Route::post('/games', [AdminController::class, 'storeGame'])->name('games.store');
-    Route::get('/games/{id}/edit', [AdminController::class, 'editGame'])->name('games.edit');
-    Route::put('/games/{id}', [AdminController::class, 'updateGame'])->name('games.update');
-    Route::delete('/games/{id}', [AdminController::class, 'deleteGame'])->name('games.delete');
-    
-    // Topup Options
-    Route::get('/topup-options', [AdminController::class, 'topupOptions'])->name('topup-options');
-    Route::get('/topup-options/create', [AdminController::class, 'createTopupOption'])->name('topup-options.create');
-    Route::post('/topup-options', [AdminController::class, 'storeTopupOption'])->name('topup-options.store');
-    Route::get('/topup-options/{id}/edit', [AdminController::class, 'editTopupOption'])->name('topup-options.edit');
-    Route::put('/topup-options/{id}', [AdminController::class, 'updateTopupOption'])->name('topup-options.update');
-    Route::delete('/topup-options/{id}', [AdminController::class, 'deleteTopupOption'])->name('topup-options.delete');
-    
-    // Users
-    Route::get('/users', [AdminController::class, 'users'])->name('users');
-    Route::get('/users/{id}/edit', [AdminController::class, 'editUser'])->name('users.edit');
-    Route::put('/users/{id}', [AdminController::class, 'updateUser'])->name('users.update');
-    Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('users.delete');
+// Protected routes
+Route::middleware(['auth'])->group(function () {
+    // Profile
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.dashboard');
+    Route::get('/profile/history', [ProfileController::class, 'history'])->name('profile.history');
     
     // Transactions
-    Route::get('/transactions', [AdminController::class, 'transactions'])->name('transactions');
+    Route::post('/transaction', [TransactionController::class, 'store'])->name('topup.store');
+    Route::get('/checkout/{id}', [TransactionController::class, 'checkout'])->name('checkout');
+    Route::post('/checkout/process', [TransactionController::class, 'processCheckout'])->name('checkout.process');
+    
+    // Top-up requests
+    Route::get('/topup/request', [TopupController::class, 'showForm'])->name('topup.form');
+    Route::post('/topup/request', [TopupController::class, 'submitRequest'])->name('topup.submit');
+    Route::get('/topup/history', [TopupController::class, 'history'])->name('topup.history');
+    
+    // Two-Factor Authentication
+    Route::get('/2fa', [TwoFactorController::class, 'show'])->name('2fa.show');
+    Route::get('/2fa/enable', [TwoFactorController::class, 'enable'])->name('2fa.enable');
+    Route::post('/2fa/verify', [TwoFactorController::class, 'verify'])->name('2fa.verify.post');
+    Route::post('/2fa/disable', [TwoFactorController::class, 'disable'])->name('2fa.disable');
+    Route::get('/2fa/recovery', [TwoFactorController::class, 'showRecoveryCodes'])->name('2fa.recovery');
+    Route::post('/2fa/recovery/regenerate', [TwoFactorController::class, 'regenerateRecoveryCodes'])->name('2fa.recovery.regenerate');
+});
 
+// Admin routes
+Route::middleware(['auth', 'is_admin'])->prefix('admin')->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    
+    // Games
+    Route::get('/games', [AdminController::class, 'games'])->name('admin.games');
+    Route::get('/games/create', [AdminController::class, 'createGame'])->name('admin.games.create');
+    Route::post('/games', [AdminController::class, 'storeGame'])->name('admin.games.store');
+    Route::get('/games/{id}/edit', [AdminController::class, 'editGame'])->name('admin.games.edit');
+    Route::put('/games/{id}', [AdminController::class, 'updateGame'])->name('admin.games.update');
+    Route::delete('/games/{id}', [AdminController::class, 'deleteGame'])->name('admin.games.delete');
+    
+    // Topup Options
+    Route::get('/topup-options', [AdminController::class, 'topupOptions'])->name('admin.topup-options');
+    Route::get('/topup-options/create', [AdminController::class, 'createTopupOption'])->name('admin.topup-options.create');
+    Route::post('/topup-options', [AdminController::class, 'storeTopupOption'])->name('admin.topup-options.store');
+    Route::get('/topup-options/{id}/edit', [AdminController::class, 'editTopupOption'])->name('admin.topup-options.edit');
+    Route::put('/topup-options/{id}', [AdminController::class, 'updateTopupOption'])->name('admin.topup-options.update');
+    Route::delete('/topup-options/{id}', [AdminController::class, 'deleteTopupOption'])->name('admin.topup-options.delete');
+    
+    // Users
+    Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
+    Route::get('/users/{id}/edit', [AdminController::class, 'editUser'])->name('admin.users.edit');
+    Route::put('/users/{id}', [AdminController::class, 'updateUser'])->name('admin.users.update');
+    Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
+    Route::post('/users/{id}/unlock', [AdminController::class, 'unlockUser'])->name('admin.users.unlock');
+    Route::post('/users/{id}/reset-password', [AdminController::class, 'resetUserPassword'])->name('admin.users.reset-password');
+    
+    // Transactions
+    Route::get('/transactions', [AdminController::class, 'transactions'])->name('admin.transactions');
+    
     // Audit Logs
-    Route::get('/audit-logs', [AdminController::class, 'auditLogs'])->name('audit-logs');
+    Route::get('/audit-logs', [AdminController::class, 'auditLogs'])->name('admin.audit-logs');
+    
+    // Top-up Requests
+    Route::get('/topup-requests', [AdminController::class, 'topupRequests'])->name('admin.topup-requests');
+    Route::post('/topup-requests/{id}/approve', [AdminController::class, 'approveTopup'])->name('admin.topup-requests.approve');
+    Route::post('/topup-requests/{id}/reject', [AdminController::class, 'rejectTopup'])->name('admin.topup-requests.reject');
 });
