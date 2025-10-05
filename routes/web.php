@@ -65,7 +65,7 @@ Route::middleware(['auth'])->group(function () {
 
 // Admin routes
 Route::middleware(['auth', 'is_admin'])->prefix('admin')->group(function () {
-    Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+   Route::get('/', [AdminController::class, 'index'])->name('admin.dashboard');
     
     // Games
     Route::get('/games', [AdminController::class, 'games'])->name('admin.games');
