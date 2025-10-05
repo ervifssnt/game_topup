@@ -7,17 +7,13 @@ use App\Models\TopupOption;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Http\Requests\StoreTransactionRequest;
 
 class TransactionController extends Controller
 {
     // Create new transaction
-    public function store(Request $request)
+    public function store(StoreTransactionRequest $request)
     {
-        $request->validate([
-            'account_id' => 'required|string',
-            'topup_option_id' => 'required|exists:topup_options,id',
-        ]);
-
         DB::beginTransaction();
 
         try {

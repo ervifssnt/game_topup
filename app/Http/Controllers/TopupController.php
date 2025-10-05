@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreTopupRequest;
 use App\Models\TopupRequest;
 use App\Models\AuditLog;
 use Illuminate\Http\Request;
@@ -21,35 +22,42 @@ class TopupController extends Controller
     }
 
     // Submit topup request
-    public function submitRequest(Request $request)
-    {
-        $request->validate([
-            'amount' => 'required|numeric|min:10000',
-            'payment_method' => 'required|string',
-            'proof_image' => 'nullable|string',
-            'notes' => 'nullable|string|max:500',
-        ], [
-            'amount.min' => 'Minimum top-up amount is Rp 10,000',
-        ]);
+public function submitRequest(Request $request)
+{
+    $request->validate([
+        'amount' => 'required|numeric|min:10000',
+        'payment_method' => 'required|string',
+        'proof_image' => 'nullable|string',
+        'notes' => 'nullable|string|max:500',
+    ], [
+        'amount.min' => 'Minimum top-up amount is Rp 10,000',
+    ]);
 
-        $topupRequest = TopupRequest::create([
-            'user_id' => Auth::id(),
-            'amount' => $request->amount,
-            'payment_method' => $request->payment_method,
-            'proof_image' => $request->proof_image,
-            'notes' => $request->notes,
-            'status' => 'pending',
-        ]);
+    $topupRequest = TopupRequest::create([
+        'user_id' => Auth::id(),
+        'amount' => $request->amount,
+        'payment_method' => $request->payment_method,
+        'proof_image' => $request->proof_image,
+        'notes' => $request->notes,
+        'status' => 'pending',
+    ]);
 
-        AuditLog::log(
-            'topup_request',
-            "User requested balance top-up: Rp " . number_format($topupRequest->amount, 0, ',', '.'),
-            'TopupRequest',
-            $topupRequest->id
-        );
+    AuditLog::log(
+        'topup_request',
+        "User requested balance top-up: Rp " . number_format($topupRequest->amount, 0, ',', '.'),
+        'TopupRequest',
+        $topupRequest->id
+    );
 
-        return redirect()->route('topup.form')->with('success', 'Top-up request submitted! Please wait for admin approval.');
-    }
+    return redirect()->route('topup.form')->with('success', 'Top-up request submitted! Please wait for admin approval.');
+}
+
+public function storeGame(StoreGameRequest $request)
+{
+    // Validation is automatic
+    $game = Game::create($request->all());
+    // ... rest of code
+}
 
     // User's topup history
     public function history()

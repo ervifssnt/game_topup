@@ -10,15 +10,28 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-->withMiddleware(function (Middleware $middleware) {
-    $middleware->alias([
-        'is_admin' => \App\Http\Middleware\IsAdmin::class,
-    ]);
-    
-    $middleware->appendToGroup('web', [
-        \App\Http\Middleware\SecurityHeaders::class,
-    ]);
-})
+    ->withMiddleware(function (Middleware $middleware) {
+        // Middleware aliases
+        $middleware->alias([
+            'is_admin' => \App\Http\Middleware\IsAdmin::class,
+            'force.https' => \App\Http\Middleware\ForceHttps::class,
+        ]);
+        
+        // Global middleware for web group
+        $middleware->appendToGroup('web', [
+            \App\Http\Middleware\SecurityHeaders::class,
+            \App\Http\Middleware\ForceHttps::class,
+            \App\Http\Middleware\SessionTimeout::class,
+        ]);
+        
+        // Priority middleware
+        $middleware->priority([
+            \App\Http\Middleware\ForceHttps::class,
+            \Illuminate\Session\Middleware\StartSession::class,
+            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+            \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
+        ]);
+    })
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();

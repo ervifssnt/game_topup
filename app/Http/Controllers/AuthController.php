@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\AuditLog;
+use App\Http\Requests\StoreUserRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -28,29 +29,9 @@ class AuthController extends Controller
     }
 
     // Handle registration
-    public function register(Request $request)
+    public function register(StoreUserRequest $request)
     {
-        $request->validate([
-            'username' => 'required|string|max:255',
-            'phone' => 'required|string|unique:users,phone|regex:/^[0-9]{10,15}$/',
-            'password' => [
-                'required',
-                'string',
-                'min:8',
-                'confirmed',
-                'regex:/[a-z]/',
-                'regex:/[A-Z]/',
-                'regex:/[0-9]/',
-                'regex:/[@$!%*#?&]/',
-            ],
-        ], [
-            'phone.unique' => 'Nomor telepon sudah terdaftar.',
-            'phone.regex' => 'Nomor telepon harus terdiri dari 10–15 digit.',
-            'password.confirmed' => 'Password tidak sama.',
-            'password.regex' => 'Password must contain uppercase, lowercase, number, and special character.',
-            'password.min' => 'Password must be at least 8 characters.',
-        ]);
-
+        // Remove old validation - it's now in StoreUserRequest
         $user = User::create([
             'username' => $request->username,
             'phone' => $request->phone,

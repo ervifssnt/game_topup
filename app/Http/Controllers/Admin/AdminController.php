@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\StoreGameRequest;
 
 class AdminController extends Controller
 {
@@ -46,14 +47,9 @@ class AdminController extends Controller
         return view('admin.games.create');
     }
     
-    public function storeGame(Request $request)
+    public function storeGame(StoreGameRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'logo' => 'nullable|string',
-        ]);
-        
+        // Validation is automatic
         $game = Game::create($request->all());
         
         // Log action
