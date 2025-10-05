@@ -88,9 +88,77 @@
         </table>
     </div>
     
-    <div style="padding: 20px;">
-        {{ $logs->links() }}
-    </div>
+<div style="padding: 20px;">
+    <style>
+    /* Pagination styling */
+    nav[role="navigation"] {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    nav[role="navigation"] > div {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+    
+    nav[role="navigation"] a,
+    nav[role="navigation"] span {
+        min-width: 40px;
+        height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        text-decoration: none;
+        color: #333;
+        font-size: 14px;
+        background: white;
+    }
+    
+    nav[role="navigation"] a:hover {
+        background: #FF8C00;
+        color: white;
+        border-color: #FF8C00;
+    }
+    
+    nav[role="navigation"] span[aria-current="page"] {
+        background: #FF8C00;
+        color: white;
+        border-color: #FF8C00;
+    }
+    
+    nav[role="navigation"] span[aria-disabled="true"] {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    /* Hide SVG arrows */
+    nav[role="navigation"] svg {
+        display: none !important;
+    }
+    
+    /* Text arrows */
+    nav[role="navigation"] a[rel="prev"]::before {
+        content: "← ";
+    }
+    
+    nav[role="navigation"] a[rel="next"]::after {
+        content: " →";
+    }
+    
+    /* Spacing for page info text */
+    nav[role="navigation"] p {
+        margin: 0 16px;
+        font-size: 14px;
+        color: #666;
+    }
+    </style>
+    {{ $logs->links() }}
 </div>
 
 <script>
