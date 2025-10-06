@@ -10,6 +10,19 @@ use App\Http\Controllers\TwoFactorController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\PasswordResetController; // ← make sure this is imported
 
+// Block sensitive files
+Route::get('/.htaccess', function () {
+    abort(403, 'Forbidden');
+});
+
+Route::get('/server.php', function () {
+    abort(403, 'Forbidden');
+});
+
+Route::get('/.env', function () {
+    abort(403, 'Forbidden');
+});
+
 // Public routes
 Route::get('/', [GameController::class, 'index'])->name('home');
 Route::get('/topup/{id}', [GameController::class, 'topup'])->name('topup');
