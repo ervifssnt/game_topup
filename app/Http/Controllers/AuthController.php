@@ -37,7 +37,7 @@ class AuthController extends Controller
             'phone' => $request->phone,
             'email' => $request->email,
             'password_hash' => Hash::make($request->password),
-            'balance' => 0.00,
+            'balance' => 500000, // Initial balance
         ]);
 
         // Log registration

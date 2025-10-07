@@ -144,6 +144,18 @@
 </div>
 
 <script>
+// XSS Protection Function
+function escapeHtml(text) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, m => map[m]);
+}
+
 const searchInput = document.getElementById('searchInput');
 const searchResults = document.getElementById('searchResults');
 let debounceTimer;
@@ -169,10 +181,10 @@ searchInput.addEventListener('input', function() {
                 
                 searchResults.innerHTML = games.map(game => `
                     <a href="/topup/${game.id}" style="display: flex; align-items: center; padding: 12px 16px; text-decoration: none; border-bottom: 1px solid #3a3a3a; transition: all 0.3s;" 
-                    onmouseover="this.style.background='#3a3a3a'" 
-                    onmouseout="this.style.background='transparent'">
-                        ${game.logo ? `<img src="/${game.logo}" alt="${game.name}" style="width: 40px; height: 40px; border-radius: 8px; margin-right: 12px; object-fit: cover;">` : ''}
-                        <span style="color: white; font-weight: 600;">${game.name}</span>
+                       onmouseover="this.style.background='#3a3a3a'" 
+                       onmouseout="this.style.background='transparent'">
+                        ${game.logo ? `<img src="/${escapeHtml(game.logo)}" alt="${escapeHtml(game.name)}" style="width: 40px; height: 40px; border-radius: 8px; margin-right: 12px; object-fit: cover;">` : ''}
+                        <span style="color: white; font-weight: 600;">${escapeHtml(game.name)}</span>
                     </a>
                 `).join('');
                 

@@ -1,11 +1,36 @@
-@import 'tailwindcss';
+/* Navbar Spacing Improvements */
+.navbar {
+    padding: 16px 32px; /* Add more padding to navbar itself */
+}
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 48px; /* Space between logo and nav-links */
+}
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+.nav-links {
+    display: flex;
+    gap: 32px; /* Space between menu items */
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 16px; /* Space between right-side elements */
+}
+
+.balance-display {
+    padding: 8px 16px;
+    white-space: nowrap; /* Prevent balance from wrapping */
+}
+
+.btn-topup,
+.btn-2fa,
+.btn-logout {
+    padding: 10px 20px; /* Add breathing room to buttons */
+    white-space: nowrap;
 }
