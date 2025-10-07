@@ -26,6 +26,7 @@ Route::get('/.env', function () {
 // Public routes
 Route::get('/', [GameController::class, 'index'])->name('home');
 Route::get('/topup/{id}', [GameController::class, 'topup'])->name('topup');
+Route::get('/api/search-games', [GameController::class, 'searchGames'])->name('api.search-games');
 
 // Auth routes
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
