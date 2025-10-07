@@ -51,7 +51,8 @@ Route::middleware(['auth'])->group(function () {
     // Profile
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.dashboard');
     Route::get('/profile/history', [ProfileController::class, 'history'])->name('profile.history');
-    
+    Route::get('/transaction/{id}', [TransactionController::class, 'show'])->name('transaction.show');
+
     // Top-up requests (MUST be before /topup/{id})
     Route::get('/topup/request', [TopupController::class, 'showForm'])->name('topup.form');
     Route::post('/topup/request', [TopupController::class, 'submitRequest'])

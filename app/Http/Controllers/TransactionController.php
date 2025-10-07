@@ -49,6 +49,24 @@ class TransactionController extends Controller
         return view('transactions.checkout', compact('transaction', 'user'));
     }
 
+    // View transaction details
+    public function show($id)
+    {
+        $transaction = Transaction::with('topupOption.game')
+            ->where('user_id', Auth::id())
+            ->findOrFail($id);
+
+        $user = Auth::user();
+
+        // If pending, redirect to checkout
+        if ($transaction->status === 'pending') {
+            return redirect()->route('checkout', $transaction->id);
+        }
+
+        // If paid, show receipt
+        return view('transactions.receipt', compact('transaction', 'user'));
+    }
+
     // Process checkout
     public function processCheckout(Request $request)
     {

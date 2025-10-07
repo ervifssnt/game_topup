@@ -5,7 +5,7 @@
 @section('styles')
 <style>
     .history-container {
-        max-width: 1000px;
+        max-width: 1100px;
         margin: 0 auto;
     }
     
@@ -37,8 +37,8 @@
         background: #1a1a1a;
         padding: 20px 25px;
         display: grid;
-        grid-template-columns: 2fr 1.5fr 1fr 1fr 0.8fr;
-        gap: 20px;
+        grid-template-columns: 2fr 1.3fr 1fr 1fr 0.8fr 1fr;
+        gap: 15px;
         font-size: 13px;
         font-weight: 600;
         color: #999;
@@ -50,8 +50,8 @@
         padding: 20px 25px;
         border-bottom: 1px solid #3a3a3a;
         display: grid;
-        grid-template-columns: 2fr 1.5fr 1fr 1fr 0.8fr;
-        gap: 20px;
+        grid-template-columns: 2fr 1.3fr 1fr 1fr 0.8fr 1fr;
+        gap: 15px;
         align-items: center;
         transition: background 0.3s;
     }
@@ -139,6 +139,46 @@
         color: #666;
     }
     
+    /* Action Buttons */
+    .transaction-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+    }
+    
+    .btn-action {
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s;
+        border: none;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+    
+    .btn-pay {
+        background: #FF8C00;
+        color: white;
+    }
+    
+    .btn-pay:hover {
+        background: #ff9d1f;
+        transform: translateY(-1px);
+    }
+    
+    .btn-view {
+        background: transparent;
+        color: #4caf50;
+        border: 1px solid #4caf50;
+    }
+    
+    .btn-view:hover {
+        background: #4caf50;
+        color: white;
+    }
+    
     /* Pagination */
     .pagination-wrapper {
         padding: 25px;
@@ -217,7 +257,7 @@
         transform: translateY(-2px);
     }
     
-    @media (max-width: 968px) {
+    @media (max-width: 1100px) {
         .table-header {
             display: none;
         }
@@ -238,6 +278,10 @@
         .transaction-status {
             justify-self: start;
         }
+        
+        .transaction-actions {
+            justify-content: flex-start;
+        }
     }
 </style>
 @endsection
@@ -257,6 +301,7 @@
                 <div>Amount</div>
                 <div>Transaction ID</div>
                 <div>Status</div>
+                <div>Action</div>
             </div>
             
             @foreach($transactions as $transaction)
@@ -285,6 +330,18 @@
                         <span class="transaction-status status-{{ $transaction->status }}">
                             {{ ucfirst($transaction->status) }}
                         </span>
+                    </div>
+                    
+                    <div class="transaction-actions">
+                        @if($transaction->status === 'pending')
+                            <a href="{{ route('transaction.show', $transaction->id) }}" class="btn-action btn-pay">
+                                Pay Now
+                            </a>
+                        @elseif($transaction->status === 'paid')
+                            <a href="{{ route('transaction.show', $transaction->id) }}" class="btn-action btn-view">
+                                View Receipt
+                            </a>
+                        @endif
                     </div>
                 </div>
             @endforeach
