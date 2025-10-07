@@ -75,7 +75,7 @@ class TransactionController extends Controller
             $discount = 0;
             $promoId = null;
 
-            // Check promo code
+            // Check promo code FIRST
             if ($request->filled('promo_code')) {
                 $promo = DB::table('promo_codes')
                     ->where('code', strtolower(trim($request->promo_code)))
@@ -101,8 +101,9 @@ class TransactionController extends Controller
                 $promoId = $promo->id;
             }
 
+            // Check balance AFTER applying discount
             if (!$user->hasEnoughBalance($finalPrice)) {
-                throw new \Exception('Not enough balance.');
+                throw new \Exception('Not enough balance. Total after discount: Rp ' . number_format($finalPrice, 0, ',', '.'));
             }
 
             // Deduct balance

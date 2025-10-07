@@ -492,41 +492,29 @@
             @endif
         </div>
         
-        @if($user->balance < $transaction->price)
-            <!-- Insufficient Balance Message -->
-            <div class="alert alert-error">
-                <span class="alert-icon">⚠</span>
-                <span>You don't have enough balance. Please top up your wallet first.</span>
+        <!-- Promo Code & Payment Form (always show) -->
+        <form method="POST" action="{{ route('checkout.process') }}">
+            @csrf
+            <input type="hidden" name="transaction_id" value="{{ $transaction->id }}">
+            
+            <!-- Promo Code Section -->
+            <div class="promo-section">
+                <label class="promo-label">Have a Promo Code?</label>
+                <div class="promo-input-group">
+                    <input type="text" 
+                        name="promo_code" 
+                        class="promo-input" 
+                        placeholder="Enter promo code"
+                        value="{{ old('promo_code') }}">
+                </div>
             </div>
             
+            <!-- Action Buttons -->
             <div class="action-buttons">
-                <a href="{{ route('home') }}" class="btn-cancel">Back to Home</a>
+                <a href="{{ route('home') }}" class="btn-cancel">Cancel</a>
+                <button type="submit" class="btn-confirm">Confirm Payment</button>
             </div>
-        @else
-            <!-- Promo Code & Payment Form -->
-            <form method="POST" action="{{ route('checkout.process') }}">
-                @csrf
-                <input type="hidden" name="transaction_id" value="{{ $transaction->id }}">
-                
-                <!-- Promo Code Section -->
-                <div class="promo-section">
-                    <label class="promo-label">Have a Promo Code?</label>
-                    <div class="promo-input-group">
-                        <input type="text" 
-                               name="promo_code" 
-                               class="promo-input" 
-                               placeholder="Enter promo code"
-                               value="{{ old('promo_code') }}">
-                    </div>
-                </div>
-                
-                <!-- Action Buttons -->
-                <div class="action-buttons">
-                    <a href="{{ route('home') }}" class="btn-cancel">Cancel</a>
-                    <button type="submit" class="btn-confirm">Confirm Payment</button>
-                </div>
-            </form>
-        @endif
+        </form>
     @endif
 </div>
 @endsection
