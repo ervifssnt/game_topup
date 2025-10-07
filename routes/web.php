@@ -54,7 +54,9 @@ Route::middleware(['auth'])->group(function () {
     
     // Top-up requests (MUST be before /topup/{id})
     Route::get('/topup/request', [TopupController::class, 'showForm'])->name('topup.form');
-    Route::post('/topup/request', [TopupController::class, 'submitRequest'])->name('topup.submit');
+    Route::post('/topup/request', [TopupController::class, 'submitRequest'])
+    ->middleware('throttle:5,1')
+    ->name('topup.submit');
     Route::get('/topup/history', [TopupController::class, 'history'])->name('topup.history');
     
     // Transactions
@@ -112,6 +114,7 @@ Route::middleware(['auth', 'is_admin'])->prefix('admin')->group(function () {
     Route::get('/topup-requests', [AdminController::class, 'topupRequests'])->name('admin.topup-requests');
     Route::post('/topup-requests/{id}/approve', [AdminController::class, 'approveTopup'])->name('admin.topup-requests.approve');
     Route::post('/topup-requests/{id}/reject', [AdminController::class, 'rejectTopup'])->name('admin.topup-requests.reject');
+    Route::get('/topup-proof/{id}', [AdminController::class, 'viewProof'])->name('admin.topup-proof');
 
     // Admin Password Reset Requests
     Route::get('/password-reset-requests', [AdminController::class, 'passwordResetRequests'])->name('admin.password-reset-requests');

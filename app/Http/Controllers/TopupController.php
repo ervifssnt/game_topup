@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreTopupRequest;
 use App\Models\TopupRequest;
 use App\Models\AuditLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class TopupController extends Controller
 {
@@ -22,42 +22,60 @@ class TopupController extends Controller
     }
 
     // Submit topup request
-public function submitRequest(Request $request)
-{
-    $request->validate([
-        'amount' => 'required|numeric|min:10000',
-        'payment_method' => 'required|string',
-        'proof_image' => 'nullable|string',
-        'notes' => 'nullable|string|max:500',
-    ], [
-        'amount.min' => 'Minimum top-up amount is Rp 10,000',
-    ]);
+    public function submitRequest(Request $request)
+    {
+        $request->validate([
+            'amount' => 'required|numeric|min:10000',
+            'payment_method' => 'required|string',
+            'proof_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // 2MB max
+            'notes' => 'nullable|string|max:500',
+        ], [
+            'amount.min' => 'Minimum top-up amount is Rp 10,000',
+            'proof_image.image' => 'File must be an image',
+            'proof_image.mimes' => 'Only JPG and PNG allowed',
+            'proof_image.max' => 'Image must not exceed 2MB',
+        ]);
 
-    $topupRequest = TopupRequest::create([
-        'user_id' => Auth::id(),
-        'amount' => $request->amount,
-        'payment_method' => $request->payment_method,
-        'proof_image' => $request->proof_image,
-        'notes' => $request->notes,
-        'status' => 'pending',
-    ]);
+        $proofPath = null;
+        if ($request->hasFile('proof_image')) {
+            // Verify MIME type (check actual file content, not just extension)
+            $mimeType = $request->file('proof_image')->getMimeType();
+            $allowedMimes = ['image/jpeg', 'image/png'];
+            
+            if (!in_array($mimeType, $allowedMimes)) {
+                return back()->withErrors(['proof_image' => 'Invalid file type. Only JPG and PNG images are allowed.'])->withInput();
+            }
+            
+            // Additional security: Check file size again
+            if ($request->file('proof_image')->getSize() > 2048000) { // 2MB in bytes
+                return back()->withErrors(['proof_image' => 'File size exceeds 2MB limit.'])->withInput();
+            }
+            
+            // Generate secure filename
+            $filename = time() . '_' . uniqid() . '.' . $request->file('proof_image')->extension();
+            
+            // Store in private directory (not publicly accessible)
+            $proofPath = $request->file('proof_image')->storeAs('topup_proofs', $filename, 'private');
+        }
 
-    AuditLog::log(
-        'topup_request',
-        "User requested balance top-up: Rp " . number_format($topupRequest->amount, 0, ',', '.'),
-        'TopupRequest',
-        $topupRequest->id
-    );
+        $topupRequest = TopupRequest::create([
+            'user_id' => Auth::id(),
+            'amount' => $request->amount,
+            'payment_method' => $request->payment_method,
+            'proof_image' => $proofPath,
+            'notes' => $request->notes,
+            'status' => 'pending',
+        ]);
 
-    return redirect()->route('topup.form')->with('success', 'Top-up request submitted! Please wait for admin approval.');
-}
+        AuditLog::log(
+            'topup_request',
+            "User requested balance top-up: Rp " . number_format($topupRequest->amount, 0, ',', '.'),
+            'TopupRequest',
+            $topupRequest->id
+        );
 
-public function storeGame(StoreGameRequest $request)
-{
-    // Validation is automatic
-    $game = Game::create($request->all());
-    // ... rest of code
-}
+        return redirect()->route('topup.form')->with('success', 'Top-up request submitted! Please wait for admin approval.');
+    }
 
     // User's topup history
     public function history()

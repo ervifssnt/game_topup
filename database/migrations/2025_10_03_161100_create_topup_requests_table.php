@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->decimal('amount', 15, 2);
             $table->string('payment_method'); // Bank Transfer, E-Wallet, etc.
-            $table->text('proof_image')->nullable(); // Path to uploaded image
+            $table->string('proof_image')->nullable(); // Path to uploaded image
             $table->text('notes')->nullable();
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->foreignId('processed_by')->nullable()->constrained('users')->onDelete('set null');

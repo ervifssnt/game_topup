@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreGameRequest;
 
 class AdminController extends Controller
@@ -362,6 +363,19 @@ public function rejectTopup(Request $request, $id)
     );
     
     return redirect()->route('admin.topup-requests')->with('success', 'Top-up request rejected.');
+}
+
+public function viewProof($id)
+{
+    $topup = TopupRequest::findOrFail($id);
+    
+    // Check if file exists
+    if (!$topup->proof_image || !Storage::disk('private')->exists($topup->proof_image)) {
+        abort(404, 'Proof image not found');
+    }
+    
+    // Return file from private storage
+    return response()->file(storage_path('app/private/' . $topup->proof_image));
 }
 
 // Password Reset Requests

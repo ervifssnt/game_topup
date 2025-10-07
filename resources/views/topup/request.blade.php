@@ -255,7 +255,7 @@
     <div class="topup-form-card">
         <h2 class="form-title">New Top-Up Request</h2>
         
-        <form action="{{ route('topup.submit') }}" method="POST">
+        <form action="{{ route('topup.submit') }}" method="POST" enctype="multipart/form-data">
             @csrf
             
             <div class="form-group">
@@ -299,8 +299,11 @@
             
             <div class="form-group">
                 <label>Payment Proof (Optional)</label>
-                <input type="text" name="proof_image" class="form-control" placeholder="Paste image URL here" value="{{ old('proof_image') }}">
-                <div class="form-hint">Upload to imgur.com or similar, then paste the link here</div>
+                <input type="file" name="proof_image" class="form-control" accept="image/jpeg,image/png">
+                <div class="form-hint">Upload payment proof (Max 2MB, JPG/PNG only)</div>
+                @error('proof_image')
+                    <span style="color: #ef5350; font-size: 13px;">{{ $message }}</span>
+                @enderror
             </div>
             
             <div class="form-group">

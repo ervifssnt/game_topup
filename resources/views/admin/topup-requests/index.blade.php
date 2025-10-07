@@ -32,7 +32,7 @@
                         <td>{{ $request->payment_method }}</td>
                         <td>
                             @if($request->proof_image)
-                                <a href="{{ $request->proof_image }}" target="_blank" class="btn btn-primary btn-sm">View</a>
+                                <a href="{{ route('admin.topup-proof', $request->id) }}" target="_blank" class="btn btn-primary btn-sm">View</a>
                             @else
                                 -
                             @endif
