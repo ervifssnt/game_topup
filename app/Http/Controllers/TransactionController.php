@@ -54,6 +54,7 @@ class TransactionController extends Controller
     {
         $request->validate([
             'transaction_id' => 'required|exists:transactions,id',
+            'promo_code' => 'nullable|string|max:50',
         ]);
 
         DB::beginTransaction();
@@ -70,21 +71,65 @@ class TransactionController extends Controller
             }
 
             $user = Auth::user();
+            $finalPrice = $transaction->price;
+            $discount = 0;
+            $promoId = null;
 
-            if (!$user->hasEnoughBalance($transaction->price)) {
+            // Check promo code
+            if ($request->filled('promo_code')) {
+                $promo = DB::table('promo_codes')
+                    ->where('code', strtolower(trim($request->promo_code)))
+                    ->where('is_active', true)
+                    ->first();
+
+                if (!$promo) {
+                    throw new \Exception('Invalid promo code.');
+                }
+                
+                // Check if user already used this promo
+                $alreadyUsed = DB::table('promo_code_usage')
+                    ->where('user_id', Auth::id())
+                    ->where('promo_code_id', $promo->id)
+                    ->exists();
+                
+                if ($alreadyUsed) {
+                    throw new \Exception('You have already used this promo code.');
+                }
+                
+                $discount = ($transaction->price * $promo->discount_percent) / 100;
+                $finalPrice = $transaction->price - $discount;
+                $promoId = $promo->id;
+            }
+
+            if (!$user->hasEnoughBalance($finalPrice)) {
                 throw new \Exception('Not enough balance.');
             }
 
             // Deduct balance
-            $user->deductBalance($transaction->price);
+            $user->deductBalance($finalPrice);
 
             // Mark as paid
             $transaction->markAsPaid();
 
+            // Log promo usage
+            if ($promoId) {
+                DB::table('promo_code_usage')->insert([
+                    'user_id' => Auth::id(),
+                    'promo_code_id' => $promoId,
+                    'transaction_id' => $transaction->id,
+                    'used_at' => now(),
+                ]);
+            }
+
             DB::commit();
 
-            return redirect()->route('checkout', $transaction->id)
-                ->with('success', "Checkout successful! Your new balance is Rp " . number_format($user->balance, 2));
+            $message = "Checkout successful!";
+            if ($discount > 0) {
+                $message .= " Promo applied: -Rp " . number_format($discount, 0, ',', '.') . ".";
+            }
+            $message .= " Your new balance is Rp " . number_format($user->balance, 0, ',', '.');
+
+            return redirect()->route('checkout', $transaction->id)->with('success', $message);
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Checkout failed: ' . $e->getMessage());

@@ -157,6 +157,38 @@
         font-weight: 500;
     }
     
+    /* Promo Code */
+    .promo-section {
+        margin-bottom: 24px;
+    }
+    
+    .promo-input-group {
+        display: flex;
+        gap: 12px;
+    }
+    
+    .promo-input {
+        flex: 1;
+        padding: 12px 16px;
+        background: #1a1a1a;
+        border: 1px solid #3a3a3a;
+        border-radius: 8px;
+        color: white;
+        font-size: 15px;
+    }
+    
+    .promo-input:focus {
+        outline: none;
+        border-color: #FF8C00;
+    }
+    
+    .promo-label {
+        font-size: 14px;
+        color: #ccc;
+        margin-bottom: 8px;
+        display: block;
+    }
+    
     /* Balance Card */
     .balance-card {
         background: #2a2a2a;
@@ -334,6 +366,10 @@
         .btn-cancel {
             order: 2;
         }
+        
+        .promo-input-group {
+            flex-direction: column;
+        }
     }
 </style>
 @endsection
@@ -467,11 +503,24 @@
                 <a href="{{ route('home') }}" class="btn-cancel">Back to Home</a>
             </div>
         @else
-            <!-- Action Buttons -->
+            <!-- Promo Code & Payment Form -->
             <form method="POST" action="{{ route('checkout.process') }}">
                 @csrf
                 <input type="hidden" name="transaction_id" value="{{ $transaction->id }}">
                 
+                <!-- Promo Code Section -->
+                <div class="promo-section">
+                    <label class="promo-label">Have a Promo Code?</label>
+                    <div class="promo-input-group">
+                        <input type="text" 
+                               name="promo_code" 
+                               class="promo-input" 
+                               placeholder="Enter promo code"
+                               value="{{ old('promo_code') }}">
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
                 <div class="action-buttons">
                     <a href="{{ route('home') }}" class="btn-cancel">Cancel</a>
                     <button type="submit" class="btn-confirm">Confirm Payment</button>

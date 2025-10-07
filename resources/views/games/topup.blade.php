@@ -421,14 +421,6 @@
                         <button type="button" class="qty-btn" id="increaseQty">+</button>
                     </div>
                 </div>
-                
-                <div class="quantity-control">
-                    <label>Have a Promo Code?</label>
-                    <input type="text" 
-                           name="promo_code" 
-                           class="promo-input" 
-                           placeholder="Enter promo code">
-                </div>
             </div>
             
             <button type="submit" class="btn-buy-now" id="buyNowBtn" disabled>Buy Now</button>
