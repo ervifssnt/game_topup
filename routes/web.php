@@ -8,7 +8,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TopupController;
 use App\Http\Controllers\TwoFactorController;
 use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\PasswordResetController; // ← make sure this is imported
+use App\Http\Controllers\PasswordResetController;
 
 // Block sensitive files
 Route::get('/.htaccess', function () {
@@ -25,9 +25,8 @@ Route::get('/.env', function () {
 
 // Public routes
 Route::get('/', [GameController::class, 'index'])->name('home');
-Route::get('/topup/{id}', [GameController::class, 'topup'])->name('topup');
 Route::get('/api/search-games', [GameController::class, 'searchGames'])
-    ->middleware('throttle:60,1') // 60 requests per minute
+    ->middleware('throttle:60,1')
     ->name('api.search-games');
     
 // Auth routes
@@ -37,17 +36,13 @@ Route::get('/register', [AuthController::class, 'showRegister'])->name('register
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Built-in Password Reset (default Laravel style)
+// Password Reset
 Route::get('/forgot-password', [PasswordResetController::class, 'showForgotForm'])->name('password.request');
 Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLink'])->name('password.email');
 Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
 Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])->name('password.update');
 
-// Custom Password Reset Request (your snippet)
-Route::get('/forgot-password', [PasswordResetController::class, 'showRequestForm'])->name('password.request');
-Route::post('/forgot-password', [PasswordResetController::class, 'submitRequest'])->name('password.request.submit');
-
-// 2FA Login Verification (accessible without full auth)
+// 2FA Login Verification
 Route::get('/2fa/verify', [AuthController::class, 'show2FAVerify'])->name('2fa.verify');
 Route::post('/2fa/login', [AuthController::class, 'verify2FA'])->name('2fa.login');
 
@@ -57,15 +52,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.dashboard');
     Route::get('/profile/history', [ProfileController::class, 'history'])->name('profile.history');
     
+    // Top-up requests (MUST be before /topup/{id})
+    Route::get('/topup/request', [TopupController::class, 'showForm'])->name('topup.form');
+    Route::post('/topup/request', [TopupController::class, 'submitRequest'])->name('topup.submit');
+    Route::get('/topup/history', [TopupController::class, 'history'])->name('topup.history');
+    
     // Transactions
     Route::post('/transaction', [TransactionController::class, 'store'])->name('topup.store');
     Route::get('/checkout/{id}', [TransactionController::class, 'checkout'])->name('checkout');
     Route::post('/checkout/process', [TransactionController::class, 'processCheckout'])->name('checkout.process');
-    
-    // Top-up requests
-    Route::get('/topup/request', [TopupController::class, 'showForm'])->name('topup.form');
-    Route::post('/topup/request', [TopupController::class, 'submitRequest'])->name('topup.submit');
-    Route::get('/topup/history', [TopupController::class, 'history'])->name('topup.history');
     
     // Two-Factor Authentication
     Route::get('/2fa', [TwoFactorController::class, 'show'])->name('2fa.show');
@@ -75,13 +70,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/2fa/recovery', [TwoFactorController::class, 'showRecoveryCodes'])->name('2fa.recovery');
     Route::post('/2fa/recovery/regenerate', [TwoFactorController::class, 'regenerateRecoveryCodes'])->name('2fa.recovery.regenerate');
 
-    // Password Reset Status (Authenticated)
+    // Password Reset Status
     Route::get('/password-reset-status', [PasswordResetController::class, 'viewStatus'])->name('password.reset.status');
 });
 
 // Admin routes
 Route::middleware(['auth', 'is_admin'])->prefix('admin')->group(function () {
-   Route::get('/', [AdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('/', [AdminController::class, 'index'])->name('admin.dashboard');
     
     // Games
     Route::get('/games', [AdminController::class, 'games'])->name('admin.games');
@@ -123,3 +118,6 @@ Route::middleware(['auth', 'is_admin'])->prefix('admin')->group(function () {
     Route::post('/password-reset-requests/{id}/approve', [AdminController::class, 'approvePasswordReset'])->name('admin.password-reset-requests.approve');
     Route::post('/password-reset-requests/{id}/reject', [AdminController::class, 'rejectPasswordReset'])->name('admin.password-reset-requests.reject');
 });
+
+// Wildcard route MUST be at the end to avoid catching specific routes
+Route::get('/topup/{id}', [GameController::class, 'topup'])->name('topup');
