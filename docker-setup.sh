@@ -43,8 +43,6 @@ docker compose exec app nginx
 docker compose exec app chmod -R 775 storage bootstrap/cache
 docker compose exec app chown -R www-data:www-data storage bootstrap/cache
 
-echo "🌐 Starting nginx..."
-docker compose exec app nginx
 
 echo ""
 echo "✅ Setup complete!"
