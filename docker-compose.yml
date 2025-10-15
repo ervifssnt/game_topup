@@ -12,6 +12,8 @@ services:
       - ./:/var/www/html
       - ./storage:/var/www/html/storage
       - ./bootstrap/cache:/var/www/html/bootstrap/cache
+      - ./docker/nginx/default.conf:/etc/nginx/http.d/default.conf
+      - ./docker/supervisor/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf
     ports:
       - "${APP_PORT:-8000}:8000"
     environment:
