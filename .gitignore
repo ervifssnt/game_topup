@@ -22,6 +22,28 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
-/storage/framework/sessions/* 
+/storage/framework/sessions/*
 .env.docker
 CLAUDE.md
+
+# Backup files
+*.bak
+*.backup
+*.tmp
+*~
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Test/Debug
+npm-debug.log
+yarn-error.log
