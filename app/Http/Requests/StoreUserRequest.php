@@ -23,7 +23,7 @@ class StoreUserRequest extends FormRequest
                 'unique:users,username'
             ],
             'email' => [
-                'nullable',
+                'required',
                 'email',
                 'max:255',
                 'unique:users,email'

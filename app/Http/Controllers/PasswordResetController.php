@@ -2,65 +2,125 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PasswordResetRequest;
 use App\Models\AuditLog;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class PasswordResetController extends Controller
 {
-    // Show request form
-    public function showRequestForm()
+    // Show forgot password form (standard Laravel flow)
+    public function showForgotForm()
     {
-        return view('auth.password-reset-request');
+        return view('auth.forgot-password');
     }
 
-    // Submit password reset request
-    public function submitRequest(Request $request)
+    // Send reset link (standard Laravel flow)
+    public function sendResetLink(Request $request)
     {
         $request->validate([
-            'email' => 'required|email|exists:users,email',
-            'reason' => 'required|string|max:500',
-        ], [
-            'email.exists' => 'No account found with this email address.',
+            'email' => 'required|email',
         ]);
 
-        $user = \App\Models\User::where('email', $request->email)->first();
+        // Generic response to prevent user enumeration
+        $genericMessage = 'If an account exists with this email, a password reset link will be sent.';
 
-        // Check if user already has pending request
-        $existingRequest = PasswordResetRequest::where('user_id', $user->id)
-            ->where('status', 'pending')
-            ->first();
+        $user = User::where('email', $request->email)->first();
 
-        if ($existingRequest) {
-            return back()->with('error', 'You already have a pending password reset request. Please wait for admin approval.');
+        if ($user) {
+            // Create password reset token
+            $token = Str::random(60);
+
+            DB::table('password_reset_tokens')->updateOrInsert(
+                ['email' => $request->email],
+                [
+                    'token' => Hash::make($token),
+                    'created_at' => now(),
+                ]
+            );
+
+            // Log the action
+            AuditLog::log(
+                'password_reset_link_requested',
+                "Password reset link requested for: {$user->username}",
+                'User',
+                $user->id
+            );
+
+            // TODO: Send email with reset link
+            // For now, just log the token (in production, this would be emailed)
+            \Log::info("Password reset token for {$request->email}: " . $token);
         }
 
-        PasswordResetRequest::create([
-            'user_id' => $user->id,
-            'reason' => $request->reason,
-            'status' => 'pending',
-        ]);
-
-        AuditLog::log(
-            'password_reset_requested',
-            "User requested password reset: {$user->username}",
-            'PasswordResetRequest',
-            null,
-            null,
-            ['user_id' => $user->id, 'reason' => $request->reason]
-        );
-
-        return redirect()->route('login')->with('success', 'Password reset request submitted! An admin will review it shortly.');
+        return back()->with('success', $genericMessage);
     }
 
-    // View request status (for logged-in users)
-    public function viewStatus()
+    // Show reset password form with token
+    public function showResetForm($token)
     {
-        $requests = PasswordResetRequest::where('user_id', Auth::id())
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
-            
-        return view('auth.password-reset-status', compact('requests'));
+        return view('auth.reset-password', ['token' => $token]);
+    }
+
+    // Process password reset
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
+                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/',
+            ],
+        ], [
+            'password.regex' => 'Password must contain uppercase, lowercase, number, and special character.',
+        ]);
+
+        // Verify token
+        $resetRecord = DB::table('password_reset_tokens')
+            ->where('email', $request->email)
+            ->first();
+
+        if (!$resetRecord) {
+            return back()->withErrors(['email' => 'Invalid or expired reset token.']);
+        }
+
+        // Check if token is valid (Laravel uses Hash::check)
+        if (!Hash::check($request->token, $resetRecord->token)) {
+            return back()->withErrors(['email' => 'Invalid or expired reset token.']);
+        }
+
+        // Check if token is not expired (60 minutes)
+        if (now()->diffInMinutes($resetRecord->created_at) > 60) {
+            DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+            return back()->withErrors(['email' => 'Reset token has expired. Please request a new one.']);
+        }
+
+        // Update password
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return back()->withErrors(['email' => 'User not found.']);
+        }
+
+        $user->password_hash = Hash::make($request->password);
+        $user->save();
+
+        // Delete the token
+        DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+
+        // Log the action
+        AuditLog::log(
+            'password_reset_completed',
+            "Password reset completed for: {$user->username}",
+            'User',
+            $user->id
+        );
+
+        return redirect()->route('login')->with('success', 'Password has been reset successfully! You can now login with your new password.');
     }
 }

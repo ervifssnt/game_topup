@@ -450,17 +450,17 @@
             </a>
         </li>
             <li class="menu-item">
+                <a href="{{ route('admin.password-reset-activity') }}" class="menu-link {{ request()->routeIs('admin.password-reset-activity') ? 'active' : '' }}">
+                    <span class="menu-icon">🔑</span>
+                    <span>Password Reset Activity</span>
+                </a>
+            </li>
+            <li class="menu-item">
                 <a href="{{ route('admin.topup-requests') }}" class="menu-link {{ request()->routeIs('admin.topup-requests') ? 'active' : '' }}">
                     <span class="menu-icon">💰</span>
                     <span>Top-Up Requests</span>
             </a>
         </li>
-        <li class="menu-item">
-    <a href="{{ route('admin.password-reset-requests') }}" class="menu-link {{ request()->routeIs('admin.password-reset-requests') ? 'active' : '' }}">
-        <span class="menu-icon">🔑</span>
-        <span>Password Resets</span>
-    </a>
-</li>
     </ul>
     </div>
     

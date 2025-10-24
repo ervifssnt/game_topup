@@ -373,94 +373,23 @@ public function viewProof($id)
     if (!$topup->proof_image || !Storage::disk('private')->exists($topup->proof_image)) {
         abort(404, 'Proof image not found');
     }
-    
+
     // Return file from private storage
     return response()->file(storage_path('app/private/' . $topup->proof_image));
 }
 
-// Password Reset Requests
-public function passwordResetRequests()
+// Password Reset Activity (Audit Logs)
+public function passwordResetActivity()
 {
-    $requests = \App\Models\PasswordResetRequest::with('user', 'processedBy')
-        ->orderByRaw("FIELD(status, 'pending', 'approved', 'rejected')")
-        ->orderBy('created_at', 'desc')
-        ->paginate(20);
-        
-    return view('admin.password-reset-requests.index', compact('requests'));
-}
+    $resetLogs = \App\Models\AuditLog::where(function($query) {
+        $query->where('action', 'LIKE', '%password_reset%')
+              ->orWhere('action', 'LIKE', '%Password reset%')
+              ->orWhere('description', 'LIKE', '%password reset%');
+    })
+    ->with('user')
+    ->orderBy('created_at', 'desc')
+    ->paginate(20);
 
-public function approvePasswordReset(Request $request, $id)
-{
-    $resetRequest = \App\Models\PasswordResetRequest::findOrFail($id);
-    
-    if ($resetRequest->status !== 'pending') {
-        return back()->with('error', 'This request has already been processed.');
-    }
-    
-    $request->validate([
-        'new_password' => [
-            'required',
-            'string',
-            'min:8',
-            'confirmed',
-            'regex:/[a-z]/',
-            'regex:/[A-Z]/',
-            'regex:/[0-9]/',
-            'regex:/[@$!%*#?&]/',
-        ],
-    ], [
-        'new_password.regex' => 'Password must contain uppercase, lowercase, number, and special character.',
-    ]);
-    
-    $user = $resetRequest->user;
-    $user->password_hash = \Hash::make($request->new_password);
-    $user->save();
-    
-    $resetRequest->update([
-        'status' => 'approved',
-        'processed_by' => \Auth::id(),
-        'admin_notes' => $request->admin_notes,
-        'processed_at' => now(),
-    ]);
-    
-    AuditLog::log(
-        'password_reset_approved',
-        "Admin approved password reset for user: {$user->username}",
-        'PasswordResetRequest',
-        $resetRequest->id
-    );
-    
-    return redirect()->route('admin.password-reset-requests')
-        ->with('success', 'Password reset approved and new password set!');
-}
-
-public function rejectPasswordReset(Request $request, $id)
-{
-    $resetRequest = \App\Models\PasswordResetRequest::findOrFail($id);
-    
-    if ($resetRequest->status !== 'pending') {
-        return back()->with('error', 'This request has already been processed.');
-    }
-    
-    $request->validate([
-        'admin_notes' => 'required|string|max:500',
-    ]);
-    
-    $resetRequest->update([
-        'status' => 'rejected',
-        'processed_by' => \Auth::id(),
-        'admin_notes' => $request->admin_notes,
-        'processed_at' => now(),
-    ]);
-    
-    AuditLog::log(
-        'password_reset_rejected',
-        "Admin rejected password reset for user: {$resetRequest->user->username}",
-        'PasswordResetRequest',
-        $resetRequest->id
-    );
-    
-    return redirect()->route('admin.password-reset-requests')
-        ->with('success', 'Password reset request rejected.');
+    return view('admin.password-reset-activity', compact('resetLogs'));
 }
 }

@@ -37,8 +37,9 @@ class InputSanitizer
         if ($input === null || $input === '') {
             return null;
         }
-        
-        return filter_var($input, FILTER_SANITIZE_NUMBER_INT);
+
+        $sanitized = filter_var($input, FILTER_SANITIZE_NUMBER_INT);
+        return $sanitized !== false && $sanitized !== '' ? (int) $sanitized : null;
     }
 
     /**

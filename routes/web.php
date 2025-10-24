@@ -72,9 +72,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/2fa/disable', [TwoFactorController::class, 'disable'])->name('2fa.disable');
     Route::get('/2fa/recovery', [TwoFactorController::class, 'showRecoveryCodes'])->name('2fa.recovery');
     Route::post('/2fa/recovery/regenerate', [TwoFactorController::class, 'regenerateRecoveryCodes'])->name('2fa.recovery.regenerate');
-
-    // Password Reset Status
-    Route::get('/password-reset-status', [PasswordResetController::class, 'viewStatus'])->name('password.reset.status');
 });
 
 // Admin routes
@@ -110,17 +107,15 @@ Route::middleware(['auth', 'is_admin'])->prefix('admin')->group(function () {
     
     // Audit Logs
     Route::get('/audit-logs', [AdminController::class, 'auditLogs'])->name('admin.audit-logs');
-    
+
+    // Password Reset Activity
+    Route::get('/password-reset-activity', [AdminController::class, 'passwordResetActivity'])->name('admin.password-reset-activity');
+
     // Top-up Requests
     Route::get('/topup-requests', [AdminController::class, 'topupRequests'])->name('admin.topup-requests');
     Route::post('/topup-requests/{id}/approve', [AdminController::class, 'approveTopup'])->name('admin.topup-requests.approve');
     Route::post('/topup-requests/{id}/reject', [AdminController::class, 'rejectTopup'])->name('admin.topup-requests.reject');
     Route::get('/topup-proof/{id}', [AdminController::class, 'viewProof'])->name('admin.topup-proof');
-
-    // Admin Password Reset Requests
-    Route::get('/password-reset-requests', [AdminController::class, 'passwordResetRequests'])->name('admin.password-reset-requests');
-    Route::post('/password-reset-requests/{id}/approve', [AdminController::class, 'approvePasswordReset'])->name('admin.password-reset-requests.approve');
-    Route::post('/password-reset-requests/{id}/reject', [AdminController::class, 'rejectPasswordReset'])->name('admin.password-reset-requests.reject');
 });
 
 // Wildcard route MUST be at the end to avoid catching specific routes
