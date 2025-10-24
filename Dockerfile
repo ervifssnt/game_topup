@@ -44,6 +44,19 @@ RUN composer install --prefer-dist
 ENV APP_ENV=local
 ENV APP_DEBUG=true
 
+# Copy entrypoint script
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Expose port 8000
+EXPOSE 8000
+
+# Set entrypoint
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+
+# Start PHP-FPM
+CMD ["php-fpm"]
+
 # Production stage
 FROM base AS production
 
