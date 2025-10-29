@@ -230,6 +230,16 @@
         font-size: 16px;
         font-weight: 600;
     }
+    /* Hide number input arrows only for the purchase quantity field */
+    .qty-input::-webkit-outer-spin-button,
+    .qty-input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    .qty-input[type=number] {
+        -moz-appearance: textfield;
+        appearance: textfield;
+    }
     
     .promo-input {
         width: 100%;
