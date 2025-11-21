@@ -18,11 +18,11 @@
             <div class="text-center mb-8">
                 <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                     <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                     </svg>
                 </div>
-                <h1 class="text-3xl font-bold mb-2">Forgot Password</h1>
-                <p class="text-sm text-text-secondary">Enter your email and we'll send you a reset link</p>
+                <h1 class="text-3xl font-bold mb-2">Reset Password</h1>
+                <p class="text-sm text-text-secondary">Verify your identity to reset your password</p>
             </div>
 
             <!-- Success Message -->
@@ -44,21 +44,60 @@
             @endif
 
             <!-- Form -->
-            <form method="POST" action="{{ route('password.email') }}" class="space-y-6">
+            <form method="POST" action="{{ route('password.reset.simple') }}" class="space-y-5">
                 @csrf
 
                 <x-input
                     label="Email Address"
                     name="email"
                     type="email"
-                    placeholder="Enter your email address"
+                    placeholder="Enter your registered email"
                     :value="old('email')"
                     required
                     autocomplete="email"
                 />
 
-                <x-button type="submit" variant="primary" class="w-full">
-                    Send Reset Link
+                <x-input
+                    label="Username"
+                    name="username"
+                    type="text"
+                    placeholder="Enter your username"
+                    :value="old('username')"
+                    required
+                    autocomplete="username"
+                />
+
+                <x-input
+                    label="Phone Number"
+                    name="phone"
+                    type="text"
+                    placeholder="Enter your registered phone number"
+                    :value="old('phone')"
+                    required
+                    autocomplete="tel"
+                />
+
+                <x-input
+                    label="New Password"
+                    name="password"
+                    type="password"
+                    placeholder="Enter new password"
+                    required
+                    autocomplete="new-password"
+                    hint="Min 8 chars with uppercase, lowercase, number & special char"
+                />
+
+                <x-input
+                    label="Confirm Password"
+                    name="password_confirmation"
+                    type="password"
+                    placeholder="Confirm new password"
+                    required
+                    autocomplete="new-password"
+                />
+
+                <x-button type="submit" variant="primary" class="w-full mt-6">
+                    Reset Password
                 </x-button>
             </form>
 

@@ -33,10 +33,10 @@ class AuditLog extends Model
     }
 
     // Helper method to create audit log
-    public static function log($action, $description, $modelType = null, $modelId = null, $oldValues = null, $newValues = null)
+    public static function log($action, $description, $modelType = null, $modelId = null, $oldValues = null, $newValues = null, $userId = null)
     {
         return self::create([
-            'user_id' => auth()->id(),
+            'user_id' => $userId ?? auth()->id(),
             'action' => $action,
             'model_type' => $modelType,
             'model_id' => $modelId,

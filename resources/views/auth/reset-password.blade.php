@@ -41,20 +41,16 @@
                 @csrf
 
                 <input type="hidden" name="token" value="{{ $token }}">
-                <input type="hidden" name="email" value="{{ $email }}">
 
-                <!-- Email (Read-only) -->
-                <div class="w-full">
-                    <label class="block text-sm font-medium text-text-secondary mb-2">
-                        Email Address
-                    </label>
-                    <input
-                        type="email"
-                        value="{{ $email }}"
-                        readonly
-                        class="input bg-dark-base cursor-not-allowed opacity-75"
-                    >
-                </div>
+                <x-input
+                    label="Email Address"
+                    name="email"
+                    type="email"
+                    placeholder="Enter your email address"
+                    :value="old('email')"
+                    required
+                    autocomplete="email"
+                />
 
                 <x-input
                     label="New Password"

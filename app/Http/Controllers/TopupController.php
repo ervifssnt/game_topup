@@ -41,21 +41,28 @@ class TopupController extends Controller
             // Verify MIME type (check actual file content, not just extension)
             $mimeType = $request->file('proof_image')->getMimeType();
             $allowedMimes = ['image/jpeg', 'image/png'];
-            
+
             if (!in_array($mimeType, $allowedMimes)) {
                 return back()->withErrors(['proof_image' => 'Invalid file type. Only JPG and PNG images are allowed.'])->withInput();
             }
-            
+
             // Additional security: Check file size again
             if ($request->file('proof_image')->getSize() > 2048000) { // 2MB in bytes
                 return back()->withErrors(['proof_image' => 'File size exceeds 2MB limit.'])->withInput();
             }
-            
-            // Generate secure filename
-            $filename = time() . '_' . uniqid() . '.' . $request->file('proof_image')->extension();
-            
+
+            // Security: Validate file extension matches MIME type
+            $extension = strtolower($request->file('proof_image')->extension());
+            $validExtensions = ['jpg', 'jpeg', 'png'];
+            if (!in_array($extension, $validExtensions)) {
+                return back()->withErrors(['proof_image' => 'Invalid file extension.'])->withInput();
+            }
+
+            // Generate cryptographically secure random filename (prevents directory traversal and collision)
+            $secureFilename = hash('sha256', uniqid('', true) . time() . random_bytes(16)) . '.' . $extension;
+
             // Store in private directory (not publicly accessible)
-            $proofPath = $request->file('proof_image')->storeAs('topup_proofs', $filename, 'private');
+            $proofPath = $request->file('proof_image')->storeAs('topup_proofs', $secureFilename, 'private');
         }
 
         $topupRequest = TopupRequest::create([

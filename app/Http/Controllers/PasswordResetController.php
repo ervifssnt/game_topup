@@ -46,7 +46,10 @@ class PasswordResetController extends Controller
                 'password_reset_link_requested',
                 "Password reset link requested for: {$user->username}",
                 'User',
-                $user->id
+                $user->id,
+                null, // oldValues
+                null, // newValues
+                $user->id // explicit user_id
             );
 
             // TODO: Send email with reset link
@@ -118,7 +121,56 @@ class PasswordResetController extends Controller
             'password_reset_completed',
             "Password reset completed for: {$user->username}",
             'User',
-            $user->id
+            $user->id,
+            null, // oldValues
+            null, // newValues
+            $user->id // explicit user_id
+        );
+
+        return redirect()->route('login')->with('success', 'Password has been reset successfully! You can now login with your new password.');
+    }
+
+    // Simple password reset (verify identity with email + username + phone)
+    public function simpleReset(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'username' => 'required|string',
+            'phone' => 'required|string',
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
+                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/',
+            ],
+        ], [
+            'password.regex' => 'Password must contain uppercase, lowercase, number, and special character.',
+        ]);
+
+        // Find user by email, username, and phone
+        $user = User::where('email', $request->email)
+            ->where('username', $request->username)
+            ->where('phone', $request->phone)
+            ->first();
+
+        if (!$user) {
+            return back()->withErrors(['email' => 'The information provided does not match our records.'])->withInput();
+        }
+
+        // Update password
+        $user->password_hash = Hash::make($request->password);
+        $user->save();
+
+        // Log the action
+        AuditLog::log(
+            'password_reset_simple',
+            "Password reset via identity verification: {$user->username}",
+            'User',
+            $user->id,
+            null, // oldValues
+            null, // newValues
+            $user->id // explicit user_id
         );
 
         return redirect()->route('login')->with('success', 'Password has been reset successfully! You can now login with your new password.');

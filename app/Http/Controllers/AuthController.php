@@ -47,7 +47,8 @@ class AuthController extends Controller
             'User',
             $user->id,
             null,
-            ['username' => $user->username, 'phone' => $user->phone]
+            ['username' => $user->username, 'phone' => $user->phone],
+            $user->id // explicit user_id
         );
 
         Auth::login($user);
@@ -120,7 +121,10 @@ class AuthController extends Controller
                 'login',
                 "User logged in: {$user->username}",
                 'User',
-                $user->id
+                $user->id,
+                null, // oldValues
+                null, // newValues
+                $user->id // explicit user_id
             );
 
             Auth::login($user, $request->filled('remember'));

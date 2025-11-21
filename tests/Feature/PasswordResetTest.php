@@ -28,17 +28,21 @@ class PasswordResetTest extends TestCase
 
     public function test_password_reset_token_generation_and_email(): void
     {
-        $user = User::factory()->create(['email' => 'test@example.com']);
+        $user = User::factory()->create([
+            'email' => 'test-reset@example.com',
+            'username' => 'testresetuser',
+            'phone' => '089999888877',
+        ]);
 
-        $response = $this->post('/forgot-password', [
-            'email' => 'test@example.com',
+        $response = $this->post('/password/email', [
+            'email' => 'test-reset@example.com',
         ]);
 
         $response->assertRedirect();
 
         // Check token exists in database
         $this->assertDatabaseHas('password_reset_tokens', [
-            'email' => 'test@example.com',
+            'email' => 'test-reset@example.com',
         ]);
     }
 
