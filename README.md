@@ -53,41 +53,50 @@ Laravel-based web application with comprehensive security implementations for cy
 ### Docker Setup (Recommended)
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/ervifssnt/game_topup.git
+# 1. Extract ZIP and navigate to directory
+unzip game_topup_audit.zip
 cd game_topup
 
-# 2. Copy environment file
-cp .env.example .env
+# 2. Start Docker containers
+docker compose up -d
 
-# 3. Run automated setup script
-./docker-setup.sh
+# 3. Run migrations and seed database
+docker compose exec app php artisan migrate:fresh --seed
 
 # 4. Access the application
 # - App: http://localhost:8000
-# - phpMyAdmin: http://localhost:8080
+# - phpMyAdmin: http://localhost:8080 (user: root, password: root_password)
 ```
 
-**Default Credentials**:
-- Admin: `admin@example.com` / `password123`
-- User: `user@example.com` / `password123`
+**Default User Account**:
+- Email: `user@example.com`
+- Password: `password123`
 
-### Local Development Setup
+**Notes**:
+- The `.env` file is already configured for Docker (MySQL database)
+- An admin account exists in the seeded database for testing admin features if needed
+- Start testing with the regular user account to evaluate user-facing security features
+
+### Local Development Setup (Alternative)
 
 ```bash
-# 1. Install dependencies
+# 1. Extract ZIP and navigate to directory
+unzip game_topup_audit.zip
+cd game_topup
+
+# 2. Install dependencies
 composer install
 npm install
 
-# 2. Environment setup
+# 3. Environment setup
 cp .env.example .env
 php artisan key:generate
 
-# 3. Database setup
+# 4. Database setup (using SQLite)
 touch database/database.sqlite
 php artisan migrate:fresh --seed
 
-# 4. Run development server
+# 5. Run development server
 php artisan serve
 # Visit: http://localhost:8000
 ```
@@ -154,10 +163,7 @@ php artisan serve
 
 ## 📚 Documentation
 
-- **README.md** (this file): Quick start and overview
-- **CLAUDE.md**: Development guidelines and architecture overview
-- **SECURITY-CHECKLIST.md**: Pre-deployment security checklist
-- **AUDIT-READY-SUMMARY.md**: Comprehensive security audit summary
+This README contains all setup instructions and project overview needed for installation and testing.
 
 ## 🛠 Development Commands
 
