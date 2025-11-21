@@ -2,486 +2,202 @@
 
 @section('title', 'Top Up - ' . $game->name)
 
-@section('styles')
-<style>
-    .topup-container {
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-    
-    /* Game Header */
-    .game-header {
-        background: #2a2a2a;
-        border-radius: 12px;
-        padding: 30px;
-        margin-bottom: 30px;
-        display: flex;
-        align-items: center;
-        gap: 30px;
-        border: 1px solid #3a3a3a;
-    }
-    
-    .game-image {
-        width: 150px;
-        height: 150px;
-        border-radius: 16px;
-        object-fit: cover;
-        background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%);
-    }
-    
-    .game-info h1 {
-        font-size: 28px;
-        font-weight: 700;
-        margin-bottom: 8px;
-        color: white;
-    }
-    
-    .game-info p {
-        color: #999;
-        font-size: 15px;
-    }
-    
-    /* Form Section */
-    .form-section {
-        background: #2a2a2a;
-        border-radius: 12px;
-        padding: 30px;
-        margin-bottom: 20px;
-        border: 1px solid #3a3a3a;
-    }
-    
-    .section-title {
-        font-size: 16px;
-        font-weight: 600;
-        margin-bottom: 20px;
-        color: white;
-    }
-    
-    .input-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-    }
-    
-    .input-group {
-        margin-bottom: 0;
-    }
-    
-    .input-group label {
-        display: block;
-        font-size: 14px;
-        margin-bottom: 8px;
-        color: #ccc;
-    }
-    
-    .input-group input {
-        width: 100%;
-        padding: 12px 16px;
-        background: #1a1a1a;
-        border: 1px solid #3a3a3a;
-        border-radius: 8px;
-        color: white;
-        font-size: 14px;
-        transition: all 0.3s;
-    }
-    
-    .input-group input:focus {
-        outline: none;
-        border-color: #FF8C00;
-    }
-    
-    /* Item Selection Grid */
-    .items-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 16px;
-        margin-bottom: 20px;
-    }
-    
-    .item-card {
-        background: #3a3a3a;
-        border: 2px solid transparent;
-        border-radius: 12px;
-        padding: 20px;
-        cursor: pointer;
-        transition: all 0.3s;
-        position: relative;
-    }
-    
-    .item-card:hover {
-        background: #404040;
-        border-color: #FF8C00;
-    }
-    
-    .item-card.selected {
-        border-color: #FF8C00;
-        background: #404040;
-    }
-    
-    .item-card input[type="radio"] {
-        position: absolute;
-        opacity: 0;
-        pointer-events: none;
-    }
-    
-    .item-name {
-        font-size: 14px;
-        font-weight: 600;
-        color: white;
-        margin-bottom: 8px;
-    }
-    
-    .item-price {
-        font-size: 15px;
-        font-weight: 700;
-        color: #FF8C00;
-    }
-    
-    /* Bottom Section */
-    .bottom-section {
-        background: #2a2a2a;
-        border-radius: 12px;
-        padding: 30px;
-        border: 1px solid #3a3a3a;
-    }
-    
-    .selected-summary {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 24px;
-        padding-bottom: 24px;
-        border-bottom: 1px solid #3a3a3a;
-    }
-    
-    .summary-left h3 {
-        font-size: 18px;
-        font-weight: 700;
-        color: white;
-        margin-bottom: 4px;
-    }
-    
-    .summary-left p {
-        color: #999;
-        font-size: 14px;
-    }
-    
-    .summary-right {
-        font-size: 24px;
-        font-weight: 700;
-        color: white;
-    }
-    
-    .purchase-controls {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-        margin-bottom: 24px;
-    }
-    
-    .quantity-control {
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .quantity-control label {
-        font-size: 14px;
-        margin-bottom: 8px;
-        color: #ccc;
-    }
-    
-    .quantity-wrapper {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-    
-    .qty-btn {
-        width: 40px;
-        height: 40px;
-        background: #FF8C00;
-        border: none;
-        border-radius: 8px;
-        color: white;
-        font-size: 20px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-    
-    .qty-btn:hover {
-        background: #ff9d1f;
-    }
-    
-    .qty-btn:disabled {
-        background: #3a3a3a;
-        color: #666;
-        cursor: not-allowed;
-    }
-    
-    .qty-input {
-        width: 60px;
-        text-align: center;
-        padding: 10px;
-        background: #1a1a1a;
-        border: 1px solid #3a3a3a;
-        border-radius: 8px;
-        color: white;
-        font-size: 16px;
-        font-weight: 600;
-    }
-    /* Hide number input arrows only for the purchase quantity field */
-    .qty-input::-webkit-outer-spin-button,
-    .qty-input::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
-    .qty-input[type=number] {
-        -moz-appearance: textfield;
-        appearance: textfield;
-    }
-    
-    .promo-input {
-        width: 100%;
-        padding: 12px 16px;
-        background: #1a1a1a;
-        border: 1px solid #3a3a3a;
-        border-radius: 8px;
-        color: white;
-        font-size: 14px;
-    }
-    
-    .promo-input:focus {
-        outline: none;
-        border-color: #FF8C00;
-    }
-    
-    .btn-buy-now {
-        width: 100%;
-        padding: 16px;
-        background: #FF8C00;
-        border: none;
-        border-radius: 8px;
-        color: white;
-        font-size: 18px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-    
-    .btn-buy-now:hover {
-        background: #ff9d1f;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(255, 140, 0, 0.4);
-    }
-    
-    .btn-buy-now:disabled {
-        background: #3a3a3a;
-        color: #666;
-        cursor: not-allowed;
-        transform: none;
-    }
-    
-    .error-message {
-        background: #4a1a1a;
-        border: 1px solid #d32f2f;
-        color: #ef5350;
-        padding: 12px 16px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        font-size: 14px;
-    }
-    
-    @media (max-width: 768px) {
-        .game-header {
-            flex-direction: column;
-            text-align: center;
-        }
-        
-        .input-grid {
-            grid-template-columns: 1fr;
-        }
-        
-        .items-grid {
-            grid-template-columns: 1fr;
-        }
-        
-        .purchase-controls {
-            grid-template-columns: 1fr;
-        }
-    }
-</style>
-@endsection
-
 @section('content')
-<div class="topup-container">
+<div class="max-w-7xl mx-auto px-4">
     <!-- Game Header -->
-    <div class="game-header">
+    <x-card class="mb-8 flex flex-col md:flex-row items-center gap-8 md:text-left text-center">
         @if($game->logo)
-            <img src="{{ asset($game->logo) }}" alt="{{ $game->name }}" class="game-image">
+            <img src="{{ asset($game->logo) }}" alt="{{ $game->name }}" class="w-36 h-36 md:w-40 md:h-40 rounded-2xl object-cover bg-gradient-to-br from-dark-border to-dark-surface flex-shrink-0">
         @else
-            <div class="game-image"></div>
+            <div class="w-36 h-36 md:w-40 md:h-40 rounded-2xl bg-gradient-to-br from-dark-border to-dark-surface flex-shrink-0"></div>
         @endif
-        <div class="game-info">
-            <h1>{{ $game->name }}</h1>
-            <p>{{ $game->description ?? 'Moonton' }}</p>
+        <div class="flex-1">
+            <h1 class="text-3xl font-bold text-white mb-2">{{ $game->name }}</h1>
+            <p class="text-text-secondary">{{ $game->description ?? 'Moonton' }}</p>
         </div>
-    </div>
-    
+    </x-card>
+
     @if($errors->any())
-        <div class="error-message">
-            @foreach($errors->all() as $error)
-                {{ $error }}
-            @endforeach
-        </div>
+        <x-alert type="error" class="mb-5">
+            <ul class="list-disc list-inside space-y-1">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </x-alert>
     @endif
     
     <form id="topupForm" method="POST" action="{{ route('topup.store') }}">
         @csrf
-        
+
         <!-- Account Details -->
-        <div class="form-section">
-            <h2 class="section-title">Enter account details</h2>
-            <div class="input-grid">
-                <div class="input-group">
-                    <label>User ID</label>
-                    <input type="text" 
-                           name="account_id" 
-                           id="userId"
-                           value="{{ old('account_id') }}"
-                           placeholder="Enter your User ID"
-                           required>
-                </div>
-                <div class="input-group">
-                    <label>Zone ID</label>
-                    <input type="text" 
-                           name="zone_id" 
-                           id="zoneId"
-                           value="{{ old('zone_id') }}"
-                           placeholder="Enter your Zone ID">
-                </div>
+        <x-card class="mb-5">
+            <h2 class="text-lg font-semibold text-white mb-5">Enter account details</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <x-input
+                    label="User ID"
+                    name="account_id"
+                    id="userId"
+                    type="text"
+                    placeholder="Enter your User ID"
+                    value="{{ old('account_id') }}"
+                    required
+                />
+                <x-input
+                    label="Zone ID"
+                    name="zone_id"
+                    id="zoneId"
+                    type="text"
+                    placeholder="Enter your Zone ID"
+                    value="{{ old('zone_id') }}"
+                />
             </div>
-        </div>
+        </x-card>
         
         <!-- Flash Sale Items -->
         @php
             $flashSaleItems = $game->topupOptions->take(1);
             $regularItems = $game->topupOptions->skip(1);
         @endphp
-        
+
         @if($flashSaleItems->count() > 0)
-        <div class="form-section">
-            <h2 class="section-title">Flash Sale</h2>
-            <div class="items-grid">
+        <x-card class="mb-5">
+            <div class="flex items-center gap-3 mb-5">
+                <h2 class="text-lg font-semibold text-white">Flash Sale</h2>
+                <x-badge variant="primary" class="animate-pulse">Limited Time</x-badge>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 @foreach($flashSaleItems as $option)
-                    <label class="item-card" data-price="{{ $option->price }}" data-name="{{ $option->amount ?? $option->coins . ' Coins' }}">
-                        <input type="radio" 
-                               name="topup_option_id" 
+                    <label class="payment-method relative cursor-pointer block" data-price="{{ $option->price }}" data-name="{{ $option->amount ?? $option->coins . ' Coins' }}">
+                        <input type="radio"
+                               name="topup_option_id"
                                value="{{ $option->id }}"
+                               class="absolute opacity-0 pointer-events-none"
                                {{ old('topup_option_id') == $option->id ? 'checked' : '' }}>
-                        <div class="item-name">{{ $option->amount ?? $option->coins . ' Diamonds' }}</div>
-                        <div class="item-price">Rp {{ number_format($option->price, 0, ',', '.') }}</div>
+                        <div class="text-sm font-semibold text-white mb-2">{{ $option->amount ?? $option->coins . ' Diamonds' }}</div>
+                        <div class="text-base font-bold text-primary">Rp {{ number_format($option->price, 0, ',', '.') }}</div>
                     </label>
                 @endforeach
             </div>
-        </div>
+        </x-card>
         @endif
         
         <!-- Choose Item (Diamonds) -->
-        <div class="form-section">
-            <h2 class="section-title">Select Amount</h2>
-            <div class="items-grid">
+        <x-card class="mb-5">
+            <h2 class="text-lg font-semibold text-white mb-5">Select Amount</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 @foreach($regularItems as $option)
-                    <label class="item-card" data-price="{{ $option->price }}" data-name="{{ $option->amount ?? $option->coins . ' Coins' }}">
-                        <input type="radio" 
-                               name="topup_option_id" 
+                    <label class="payment-method relative cursor-pointer block" data-price="{{ $option->price }}" data-name="{{ $option->amount ?? $option->coins . ' Coins' }}">
+                        <input type="radio"
+                               name="topup_option_id"
                                value="{{ $option->id }}"
+                               class="absolute opacity-0 pointer-events-none"
                                {{ old('topup_option_id') == $option->id ? 'checked' : '' }}
                                required>
-                        <div class="item-name">{{ $option->amount ?? $option->coins . ' Diamonds' }}</div>
-                        <div class="item-price">Rp {{ number_format($option->price, 0, ',', '.') }}</div>
+                        <div class="text-sm font-semibold text-white mb-2">{{ $option->amount ?? $option->coins . ' Diamonds' }}</div>
+                        <div class="text-base font-bold text-primary">Rp {{ number_format($option->price, 0, ',', '.') }}</div>
                     </label>
                 @endforeach
             </div>
-        </div>
+        </x-card>
         
         <!-- Bottom Section: Summary + Purchase Controls -->
-        <div class="bottom-section">
-            <div class="selected-summary">
-                <div class="summary-left">
-                    <h3 id="selectedItemName">Rp 0</h3>
-                    <p id="selectedItemDesc">Please select an item</p>
+        <x-card>
+            <!-- Selected Summary -->
+            <div class="flex justify-between items-center mb-6 pb-6 border-b border-dark-border">
+                <div>
+                    <h3 id="selectedItemName" class="text-xl font-bold text-white mb-1">Rp 0</h3>
+                    <p id="selectedItemDesc" class="text-text-secondary text-sm">Please select an item</p>
                 </div>
-                <div class="summary-right" id="totalPrice">Rp 0</div>
+                <div id="totalPrice" class="text-2xl font-bold text-white">Rp 0</div>
             </div>
-            
-            <div class="purchase-controls">
-                <div class="quantity-control">
-                    <label>Purchase Quantity</label>
-                    <div class="quantity-wrapper">
-                        <button type="button" class="qty-btn" id="decreaseQty">-</button>
-                        <input type="number" 
-                               name="quantity" 
-                               id="quantity" 
-                               class="qty-input" 
-                               value="1" 
-                               min="1" 
-                               max="99" 
+
+            <!-- Purchase Controls -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+                <div class="flex flex-col">
+                    <label class="block text-sm font-medium text-text-secondary mb-2">Purchase Quantity</label>
+                    <div class="flex items-center gap-3">
+                        <button type="button"
+                                class="w-12 h-12 bg-primary hover:bg-primary-hover disabled:bg-dark-border disabled:text-text-tertiary disabled:cursor-not-allowed rounded-lg text-white text-xl font-bold transition-all flex items-center justify-center hover:scale-110 active:scale-95"
+                                id="decreaseQty">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M20 12H4"/>
+                            </svg>
+                        </button>
+                        <input type="number"
+                               name="quantity"
+                               id="quantity"
+                               class="qty-input w-20 text-center px-3 py-3 bg-dark-elevated border-2 border-dark-border rounded-lg text-white text-lg font-bold focus:outline-none focus:border-primary transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                               value="1"
+                               min="1"
+                               max="99"
                                readonly>
-                        <button type="button" class="qty-btn" id="increaseQty">+</button>
+                        <button type="button"
+                                class="w-12 h-12 bg-primary hover:bg-primary-hover disabled:bg-dark-border disabled:text-text-tertiary disabled:cursor-not-allowed rounded-lg text-white text-xl font-bold transition-all flex items-center justify-center hover:scale-110 active:scale-95"
+                                id="increaseQty">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"/>
+                            </svg>
+                        </button>
                     </div>
+                    <p class="text-xs text-text-tertiary mt-2">Max 99 items per purchase</p>
                 </div>
             </div>
-            
-            <button type="submit" class="btn-buy-now" id="buyNowBtn" disabled>Buy Now</button>
-        </div>
+
+            <!-- Buy Now Button -->
+            <button type="submit"
+                    class="w-full px-6 py-4 bg-primary hover:bg-primary-hover disabled:bg-dark-border disabled:text-text-tertiary disabled:cursor-not-allowed disabled:transform-none rounded-lg text-white text-lg font-bold transition-all hover:transform hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(255,140,0,0.4)] flex items-center justify-center gap-2 group"
+                    id="buyNowBtn"
+                    disabled>
+                <span id="buyNowText">Select an item to continue</span>
+                <svg class="w-5 h-5 hidden group-enabled:inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                </svg>
+            </button>
+        </x-card>
     </form>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('topupForm');
-    const itemCards = document.querySelectorAll('.item-card');
+    const itemCards = document.querySelectorAll('.payment-method');
     const quantityInput = document.getElementById('quantity');
     const decreaseBtn = document.getElementById('decreaseQty');
     const increaseBtn = document.getElementById('increaseQty');
     const buyNowBtn = document.getElementById('buyNowBtn');
+    const buyNowText = document.getElementById('buyNowText');
     const selectedItemName = document.getElementById('selectedItemName');
     const selectedItemDesc = document.getElementById('selectedItemDesc');
     const totalPrice = document.getElementById('totalPrice');
-    
+
     let selectedPrice = 0;
     let selectedName = '';
-    
+
     // Handle item selection
     itemCards.forEach(card => {
         card.addEventListener('click', function() {
-            // Remove selected class from all cards
-            itemCards.forEach(c => c.classList.remove('selected'));
-            
-            // Add selected class to clicked card
-            this.classList.add('selected');
-            
             // Get price and name
             selectedPrice = parseFloat(this.dataset.price);
             selectedName = this.dataset.name;
-            
+
             // Update display
             updateSummary();
             buyNowBtn.disabled = false;
+            buyNowText.textContent = 'Buy Now';
         });
-        
+
         // Check if already selected (on page load)
         const radio = card.querySelector('input[type="radio"]');
         if (radio && radio.checked) {
-            card.classList.add('selected');
             selectedPrice = parseFloat(card.dataset.price);
             selectedName = card.dataset.name;
             updateSummary();
             buyNowBtn.disabled = false;
+            buyNowText.textContent = 'Buy Now';
         }
     });
-    
+
     // Quantity controls
     decreaseBtn.addEventListener('click', function() {
         let qty = parseInt(quantityInput.value);
@@ -490,7 +206,7 @@ document.addEventListener('DOMContentLoaded', function() {
             updateSummary();
         }
     });
-    
+
     increaseBtn.addEventListener('click', function() {
         let qty = parseInt(quantityInput.value);
         if (qty < 99) {
@@ -498,16 +214,16 @@ document.addEventListener('DOMContentLoaded', function() {
             updateSummary();
         }
     });
-    
+
     function updateSummary() {
         const qty = parseInt(quantityInput.value);
         const total = selectedPrice * qty;
-        
+
         selectedItemName.textContent = 'Rp ' + formatNumber(total);
         selectedItemDesc.textContent = selectedName + (qty > 1 ? ' x ' + qty : '');
         totalPrice.textContent = 'Rp ' + formatNumber(total);
     }
-    
+
     function formatNumber(num) {
         return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }

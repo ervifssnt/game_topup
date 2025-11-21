@@ -1,298 +1,103 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - UP STORE</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
-            min-height: 100vh;
-            display: flex;
-            color: white;
-        }
-        
-        .container {
-            display: flex;
-            width: 100%;
-            min-height: 100vh;
-        }
-        
-        /* Left Side - Logo */
-        .left-side {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #1a1a1a;
-            padding: 40px;
-        }
-        
-        .logo-section {
-            text-align: center;
-        }
-        
-        .logo-section h2 {
-            color: #888;
-            font-size: 18px;
-            font-weight: 400;
-            margin-bottom: 20px;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .logo-icon {
-            font-size: 48px;
-            font-weight: 900;
-            font-style: italic;
-            letter-spacing: -2px;
-        }
-        
-        .logo-text {
-            font-size: 32px;
-            font-weight: 700;
-            letter-spacing: 2px;
-        }
-        
-        /* Right Side - Form */
-        .right-side {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #2a2a2a;
-            padding: 40px;
-        }
-        
-        .form-container {
-            width: 100%;
-            max-width: 440px;
-        }
-        
-        .form-container h1 {
-            font-size: 28px;
-            font-weight: 600;
-            margin-bottom: 40px;
-            text-align: center;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            font-size: 14px;
-            margin-bottom: 8px;
-            color: #ccc;
-        }
-        
-        .form-group input {
-            width: 100%;
-            padding: 14px 16px;
-            background: #3a3a3a;
-            border: 1px solid #4a4a4a;
-            border-radius: 8px;
-            color: white;
-            font-size: 15px;
-            transition: all 0.3s;
-        }
-        
-        .form-group input:focus {
-            outline: none;
-            border-color: #FF8C00;
-            background: #404040;
-        }
-        
-        .form-options {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-        
-        .remember-me {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            color: #bbb;
-        }
-        
-        .remember-me input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
-        
-        .forgot-password {
-            color: #FF8C00;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 500;
-        }
-        
-        .forgot-password:hover {
-            text-decoration: underline;
-        }
-        
-        .btn-login {
-            width: 100%;
-            padding: 14px;
-            background: #FF8C00;
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .btn-login:hover {
-            background: #ff9d1f;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 140, 0, 0.4);
-        }
-        
-        .divider {
-            text-align: center;
-            margin: 24px 0;
-            color: #888;
-            font-size: 14px;
-        }
-        
-        .btn-google {
-            width: 100%;
-            padding: 14px;
-            background: #3a3a3a;
-            border: 1px solid #4a4a4a;
-            border-radius: 8px;
-            color: white;
-            font-size: 15px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .btn-google:hover {
-            background: #404040;
-            border-color: #5a5a5a;
-        }
-        
-        .register-link {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 14px;
-            color: #bbb;
-        }
-        
-        .register-link a {
-            color: white;
-            text-decoration: underline;
-            font-weight: 500;
-        }
-        
-        .error-message {
-            background: #ff4444;
-            color: white;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-        
-        @media (max-width: 968px) {
-            .container {
-                flex-direction: column;
-            }
-            
-            .left-side {
-                min-height: 200px;
-            }
-            
-            .right-side {
-                padding: 30px 20px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <!-- Left Side - Logo -->
-        <div class="left-side">
-            <div class="logo-section">
-                <h2>Welcome to</h2>
-                <div class="logo">
-                    <span class="logo-icon">UP</span>
-                    <span class="logo-text">STORE</span>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Right Side - Form -->
-        <div class="right-side">
-            <div class="form-container">
-                <h1>Log In Member</h1>
-                
-                @if($errors->any())
-                    <div class="error-message">
-                        @foreach($errors->all() as $error)
-                            {{ $error }}
-                        @endforeach
-                    </div>
-                @endif
-                
-                <form method="POST" action="{{ route('login') }}">
-                    @csrf
-                    
-                    <div class="form-group">
-                        <label>Username</label>
-                        <input type="text" 
-                               name="email" 
-                               value="{{ old('email') }}"
-                               placeholder="Enter your username or email"
-                               required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Password</label>
-                        <input type="password" 
-                               name="password" 
-                               placeholder="Enter your password"
-                               required>
-                    </div>
-                    
-                    <div class="form-options">
-                        <label class="remember-me">
-                            <input type="checkbox" name="remember">
-                            <span>Remember me</span>
-                        </label>
-                        <a href="{{ route('password.request') }}" class="forgot-password">Forgot Password?</a>
-                    </div>
-                    
-                    <button type="submit" class="btn-login">Login</button>
-                </form>
-                
-                <div class="divider">Don't have an account? <a href="{{ route('register') }}" style="color: white; text-decoration: underline;">Register</a></div>
-                
-                <button class="btn-google" onclick="alert('Google Sign-in coming soon!')">
-                    Log in with Google
-                </button>
+@extends('layouts.auth')
+
+@section('title', 'Login - UP STORE')
+
+@section('content')
+<div class="flex min-h-screen">
+    <!-- Left Side - Branding -->
+    <div class="hidden lg:flex lg:flex-1 items-center justify-center bg-dark-base p-8">
+        <div class="text-center">
+            <h2 class="text-text-tertiary text-lg font-normal mb-6">Welcome to</h2>
+            <div class="flex items-center justify-center gap-3">
+                <span class="text-5xl font-black italic text-primary -tracking-wider">UP</span>
+                <span class="text-3xl font-bold tracking-widest">STORE</span>
             </div>
         </div>
     </div>
-</body>
-</html>
+
+    <!-- Right Side - Login Form -->
+    <div class="flex-1 flex items-center justify-center bg-dark-surface p-6 sm:p-8 lg:p-12">
+        <div class="w-full max-w-md">
+            <!-- Mobile Logo -->
+            <div class="lg:hidden text-center mb-8">
+                <div class="flex items-center justify-center gap-2 mb-2">
+                    <span class="text-3xl font-black italic text-primary">UP</span>
+                    <span class="text-xl font-bold tracking-wider">STORE</span>
+                </div>
+            </div>
+
+            <h1 class="text-3xl font-semibold text-center mb-10">Log In Member</h1>
+
+            <!-- Error Messages -->
+            @if($errors->any())
+                <x-alert type="error" class="mb-6">
+                    @foreach($errors->all() as $error)
+                        {{ $error }}
+                    @endforeach
+                </x-alert>
+            @endif
+
+            <!-- Login Form -->
+            <form method="POST" action="{{ route('login') }}" class="space-y-5">
+                @csrf
+
+                <x-input
+                    label="Username or Email"
+                    name="email"
+                    type="text"
+                    placeholder="Enter your username or email"
+                    :value="old('email')"
+                    required
+                    autocomplete="username"
+                />
+
+                <x-input
+                    label="Password"
+                    name="password"
+                    type="password"
+                    placeholder="Enter your password"
+                    required
+                    autocomplete="current-password"
+                />
+
+                <!-- Remember Me & Forgot Password -->
+                <div class="flex items-center justify-between">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="remember" class="w-4 h-4 rounded border-dark-border bg-dark-elevated text-primary focus:ring-2 focus:ring-primary/50 cursor-pointer">
+                        <span class="text-sm text-text-secondary">Remember me</span>
+                    </label>
+                    <a href="{{ route('password.request') }}" class="text-sm text-primary hover:text-primary-400 font-medium transition-colors">
+                        Forgot Password?
+                    </a>
+                </div>
+
+                <!-- Login Button -->
+                <x-button type="submit" variant="primary" class="w-full">
+                    Login
+                </x-button>
+            </form>
+
+            <!-- Divider -->
+            <div class="text-center my-6 text-sm text-text-secondary">
+                Don't have an account?
+                <a href="{{ route('register') }}" class="text-white underline font-medium hover:text-primary transition-colors">Register</a>
+            </div>
+
+            <!-- Google Sign-in (Placeholder) -->
+            <button
+                type="button"
+                onclick="alert('Google Sign-in coming soon!')"
+                class="w-full flex items-center justify-center gap-2 px-6 py-3 bg-dark-elevated border border-dark-border rounded-lg text-white hover:bg-dark-hover hover:border-gray-500 transition-all"
+            >
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+                Log in with Google
+            </button>
+        </div>
+    </div>
+</div>
+@endsection

@@ -1,336 +1,208 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - UP STORE</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
-            min-height: 100vh;
-            display: flex;
-            color: white;
-        }
-        
-        .container {
-            display: flex;
-            width: 100%;
-            min-height: 100vh;
-        }
-        
-        /* Left Side - Logo */
-        .left-side {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #1a1a1a;
-            padding: 40px;
-        }
-        
-        .logo-section {
-            text-align: center;
-        }
-        
-        .logo-section h2 {
-            color: #888;
-            font-size: 18px;
-            font-weight: 400;
-            margin-bottom: 20px;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .logo-icon {
-            font-size: 48px;
-            font-weight: 900;
-            font-style: italic;
-            letter-spacing: -2px;
-        }
-        
-        .logo-text {
-            font-size: 32px;
-            font-weight: 700;
-            letter-spacing: 2px;
-        }
-        
-        /* Right Side - Form */
-        .right-side {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #2a2a2a;
-            padding: 40px;
-        }
-        
-        .form-container {
-            width: 100%;
-            max-width: 440px;
-        }
-        
-        .form-container h1 {
-            font-size: 28px;
-            font-weight: 600;
-            margin-bottom: 40px;
-            text-align: center;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            font-size: 14px;
-            margin-bottom: 8px;
-            color: #ccc;
-        }
-        
-        .form-group input {
-            width: 100%;
-            padding: 14px 16px;
-            background: #3a3a3a;
-            border: 1px solid #4a4a4a;
-            border-radius: 8px;
-            color: white;
-            font-size: 15px;
-            transition: all 0.3s;
-        }
-        
-        .form-group input:focus {
-            outline: none;
-            border-color: #FF8C00;
-            background: #404040;
-        }
-        
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-        
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 20px 0;
-        }
-        
-        .checkbox-group input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
-        
-        .checkbox-group label {
-            font-size: 13px;
-            color: #bbb;
-            margin: 0;
-        }
-        
-        .checkbox-group a {
-            color: #FF8C00;
-            text-decoration: none;
-        }
-        
-        .btn-register {
-            width: 100%;
-            padding: 14px;
-            background: #FF8C00;
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 10px;
-        }
-        
-        .btn-register:hover {
-            background: #ff9d1f;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 140, 0, 0.4);
-        }
-        
-        .divider {
-            text-align: center;
-            margin: 24px 0;
-            color: #888;
-            font-size: 14px;
-        }
-        
-        .btn-google {
-            width: 100%;
-            padding: 14px;
-            background: #3a3a3a;
-            border: 1px solid #4a4a4a;
-            border-radius: 8px;
-            color: white;
-            font-size: 15px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .btn-google:hover {
-            background: #404040;
-            border-color: #5a5a5a;
-        }
-        
-        .login-link {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 14px;
-            color: #bbb;
-        }
-        
-        .login-link a {
-            color: white;
-            text-decoration: underline;
-            font-weight: 500;
-        }
-        
-        .error-message {
-            background: #ff4444;
-            color: white;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-        
-        .error-message ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
-        
-        .error-message li {
-            margin: 4px 0;
-        }
-        
-        @media (max-width: 968px) {
-            .container {
-                flex-direction: column;
-            }
-            
-            .left-side {
-                min-height: 200px;
-            }
-            
-            .right-side {
-                padding: 30px 20px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <!-- Left Side - Logo -->
-        <div class="left-side">
-            <div class="logo-section">
-                <h2>Welcome to</h2>
-                <div class="logo">
-                    <span class="logo-icon">UP</span>
-                    <span class="logo-text">STORE</span>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Right Side - Form -->
-        <div class="right-side">
-            <div class="form-container">
-                <h1>Create your account</h1>
-                
-                @if($errors->any())
-                    <div class="error-message">
-                        <ul>
-                            @foreach($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-                
-                <form method="POST" action="{{ route('register') }}">
-                    @csrf
-                    
-                    <div class="form-group">
-                        <label>Username</label>
-                        <input type="text" 
-                               name="username" 
-                               value="{{ old('username') }}"
-                               placeholder="Enter your username"
-                               required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>WhatsApp Number</label>
-                        <input type="text" 
-                               name="phone" 
-                               value="{{ old('phone') }}"
-                               placeholder="Enter your WhatsApp number"
-                               required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Email Address</label>
-                        <input type="email" 
-                               name="email" 
-                               value="{{ old('email') }}"
-                               placeholder="Enter your email address"
-                               required>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Password</label>
-                            <input type="password" 
-                                   name="password" 
-                                   placeholder="Enter password"
-                                   required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>Confirm Password</label>
-                            <input type="password" 
-                                   name="password_confirmation" 
-                                   placeholder="Confirm password"
-                                   required>
-                        </div>
-                    </div>
-                    
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="terms" required>
-                        <label for="terms">
-                            I agree to <a href="#">Terms & Privacy Policy</a>
-                        </label>
-                    </div>
-                    
-                    <button type="submit" class="btn-register">Register</button>
-                </form>
-                
-                <div class="divider">Already have an account? <a href="{{ route('login') }}" style="color: white; text-decoration: underline;">Login</a></div>
-                
-                <button class="btn-google" onclick="alert('Google Sign-in coming soon!')">
-                    Sign up with Google
-                </button>
+@extends('layouts.auth')
+
+@section('title', 'Register - UP STORE')
+
+@section('content')
+<div class="flex min-h-screen">
+    <!-- Left Side - Branding -->
+    <div class="hidden lg:flex lg:flex-1 items-center justify-center bg-dark-base p-8">
+        <div class="text-center">
+            <h2 class="text-text-tertiary text-lg font-normal mb-6">Welcome to</h2>
+            <div class="flex items-center justify-center gap-3">
+                <span class="text-5xl font-black italic text-primary -tracking-wider">UP</span>
+                <span class="text-3xl font-bold tracking-widest">STORE</span>
             </div>
         </div>
     </div>
-</body>
-</html>
+
+    <!-- Right Side - Register Form -->
+    <div class="flex-1 flex items-center justify-center bg-dark-surface p-6 sm:p-8 lg:p-12">
+        <div class="w-full max-w-md">
+            <!-- Mobile Logo -->
+            <div class="lg:hidden text-center mb-8">
+                <div class="flex items-center justify-center gap-2 mb-2">
+                    <span class="text-3xl font-black italic text-primary">UP</span>
+                    <span class="text-xl font-bold tracking-wider">STORE</span>
+                </div>
+            </div>
+
+            <h1 class="text-3xl font-semibold text-center mb-10">Create your account</h1>
+
+            <!-- Error Messages -->
+            @if($errors->any())
+                <x-alert type="error" class="mb-6">
+                    <ul class="space-y-1">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </x-alert>
+            @endif
+
+            <!-- Register Form -->
+            <form method="POST" action="{{ route('register') }}" class="space-y-5">
+                @csrf
+
+                <x-input
+                    label="Username"
+                    name="username"
+                    type="text"
+                    placeholder="Enter your username"
+                    :value="old('username')"
+                    required
+                />
+
+                <x-input
+                    label="WhatsApp Number"
+                    name="phone"
+                    type="tel"
+                    placeholder="Enter your WhatsApp number (e.g., 08123456789)"
+                    :value="old('phone')"
+                    required
+                    autocomplete="tel"
+                />
+
+                <x-input
+                    label="Email Address"
+                    name="email"
+                    type="email"
+                    placeholder="Enter your email address"
+                    :value="old('email')"
+                    required
+                />
+
+                <!-- Password Fields in Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <x-input
+                            label="Password"
+                            name="password"
+                            id="password"
+                            type="password"
+                            placeholder="Enter password"
+                            required
+                            autocomplete="new-password"
+                        />
+                        <!-- Password Strength Indicator -->
+                        <div class="mt-2 hidden" id="password-strength">
+                            <div class="flex gap-1 mb-1">
+                                <div class="h-1 flex-1 bg-dark-border rounded transition-all" id="strength-1"></div>
+                                <div class="h-1 flex-1 bg-dark-border rounded transition-all" id="strength-2"></div>
+                                <div class="h-1 flex-1 bg-dark-border rounded transition-all" id="strength-3"></div>
+                                <div class="h-1 flex-1 bg-dark-border rounded transition-all" id="strength-4"></div>
+                            </div>
+                            <p class="text-xs text-text-tertiary" id="strength-text">Password strength: <span id="strength-label">-</span></p>
+                        </div>
+                        <p class="text-xs text-text-tertiary mt-1.5">Min 8 chars, with uppercase, lowercase, number & special char</p>
+                    </div>
+
+                    <x-input
+                        label="Confirm Password"
+                        name="password_confirmation"
+                        type="password"
+                        placeholder="Confirm password"
+                        required
+                        autocomplete="new-password"
+                    />
+                </div>
+
+                <!-- Terms Checkbox -->
+                <div class="flex items-start gap-3">
+                    <input
+                        type="checkbox"
+                        id="terms"
+                        required
+                        class="mt-1 w-4 h-4 rounded border-dark-border bg-dark-elevated text-primary focus:ring-2 focus:ring-primary/50 cursor-pointer"
+                    >
+                    <label for="terms" class="text-sm text-text-secondary cursor-pointer">
+                        I agree to <a href="#" class="text-primary hover:text-primary-400 transition-colors">Terms & Privacy Policy</a>
+                    </label>
+                </div>
+
+                <!-- Register Button -->
+                <x-button type="submit" variant="primary" class="w-full">
+                    Register
+                </x-button>
+            </form>
+
+            <!-- Divider -->
+            <div class="text-center my-6 text-sm text-text-secondary">
+                Already have an account?
+                <a href="{{ route('login') }}" class="text-white underline font-medium hover:text-primary transition-colors">Login</a>
+            </div>
+
+            <!-- Google Sign-in (Placeholder) -->
+            <button
+                type="button"
+                onclick="alert('Google Sign-in coming soon!')"
+                class="w-full flex items-center justify-center gap-2 px-6 py-3 bg-dark-elevated border border-dark-border rounded-lg text-white hover:bg-dark-hover hover:border-gray-500 transition-all"
+            >
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+                Sign up with Google
+            </button>
+        </div>
+    </div>
+</div>
+@endsection
+
+@section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const passwordInput = document.getElementById('password');
+    const strengthContainer = document.getElementById('password-strength');
+    const strengthBars = [
+        document.getElementById('strength-1'),
+        document.getElementById('strength-2'),
+        document.getElementById('strength-3'),
+        document.getElementById('strength-4')
+    ];
+    const strengthLabel = document.getElementById('strength-label');
+
+    passwordInput.addEventListener('input', function() {
+        const password = this.value;
+
+        if (password.length === 0) {
+            strengthContainer.classList.add('hidden');
+            return;
+        }
+
+        strengthContainer.classList.remove('hidden');
+
+        let strength = 0;
+        const checks = [
+            password.length >= 8,
+            /[a-z]/.test(password),
+            /[A-Z]/.test(password),
+            /[0-9]/.test(password),
+            /[^a-zA-Z0-9]/.test(password)
+        ];
+
+        strength = checks.filter(Boolean).length;
+
+        // Reset all bars
+        strengthBars.forEach(bar => {
+            bar.className = 'h-1 flex-1 bg-dark-border rounded transition-all';
+        });
+
+        // Update bars based on strength
+        const colors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-green-500'];
+        const labels = ['Weak', 'Fair', 'Good', 'Strong'];
+        const colorTexts = ['text-red-500', 'text-orange-500', 'text-yellow-500', 'text-green-500'];
+
+        if (strength > 0) {
+            const level = Math.min(Math.ceil(strength / 1.25), 4) - 1;
+            for (let i = 0; i <= level; i++) {
+                strengthBars[i].className = `h-1 flex-1 ${colors[level]} rounded transition-all`;
+            }
+            strengthLabel.textContent = labels[level];
+            strengthLabel.className = colorTexts[level];
+        }
+    });
+});
+</script>
+@endsection

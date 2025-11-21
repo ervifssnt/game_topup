@@ -1,216 +1,77 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Forgot Password - UP STORE</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #1a1a1a;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            padding: 20px;
-        }
-        
-        .container {
-            width: 100%;
-            max-width: 520px;
-        }
-        
-        .logo {
-            text-align: center;
-            margin-bottom: 50px;
-        }
-        
-        .logo-wrapper {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .logo-icon {
-            font-size: 32px;
-            font-weight: 900;
-            font-style: italic;
-        }
-        
-        .logo-text {
-            font-size: 24px;
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
-        
-        .form-box {
-            background: #2a2a2a;
-            border: 1px solid #3a3a3a;
-            border-radius: 12px;
-            padding: 50px 40px;
-        }
-        
-        h1 {
-            font-size: 32px;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        
-        .form-group {
-            margin-bottom: 24px;
-        }
-        
-        .form-group label {
-            display: block;
-            font-size: 14px;
-            margin-bottom: 8px;
-            color: #ccc;
-        }
-        
-        .form-group input {
-            width: 100%;
-            padding: 14px 16px;
-            background: #3a3a3a;
-            border: 1px solid #4a4a4a;
-            border-radius: 8px;
-            color: white;
-            font-size: 15px;
-            transition: all 0.3s;
-        }
-        
-        .form-group input:focus {
-            outline: none;
-            border-color: #FF8C00;
-            background: #404040;
-        }
-        
-        .btn-submit {
-            width: 100%;
-            padding: 14px;
-            background: #FF8C00;
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .btn-submit:hover {
-            background: #ff9d1f;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 140, 0, 0.4);
-        }
-        
-        .back-link {
-            text-align: center;
-            margin-top: 24px;
-        }
-        
-        .back-link a {
-            color: #FF8C00;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-        }
-        
-        .back-link a:hover {
-            text-decoration: underline;
-        }
-        
-        .alert {
-            padding: 14px 16px;
-            border-radius: 8px;
-            margin-bottom: 24px;
-            font-size: 14px;
-        }
-        
-        .alert-success {
-            background: #1e4620;
-            border: 1px solid #2e7d32;
-            color: #66bb6a;
-        }
-        
-        .alert-error {
-            background: #4a1a1a;
-            border: 1px solid #d32f2f;
-            color: #ef5350;
-        }
-        
-        .alert ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
-        
-        @media (max-width: 600px) {
-            .form-box {
-                padding: 40px 30px;
-            }
-            
-            h1 {
-                font-size: 28px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
+@extends('layouts.auth')
+
+@section('title', 'Forgot Password - UP STORE')
+
+@section('content')
+<div class="min-h-screen flex items-center justify-center p-6">
+    <div class="w-full max-w-lg">
         <!-- Logo -->
-        <div class="logo">
-            <div class="logo-wrapper">
-                <span class="logo-icon">UP</span>
-                <span class="logo-text">STORE</span>
+        <div class="text-center mb-12">
+            <div class="flex items-center justify-center gap-2 mb-2">
+                <span class="text-4xl font-black italic text-primary">UP</span>
+                <span class="text-2xl font-bold tracking-wider">STORE</span>
             </div>
         </div>
-        
-        <!-- Form Box -->
-        <div class="form-box">
-            <h1>Forgot Password</h1>
-            
+
+        <!-- Form Card -->
+        <x-card class="max-w-md mx-auto">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+                <h1 class="text-3xl font-bold mb-2">Forgot Password</h1>
+                <p class="text-sm text-text-secondary">Enter your email and we'll send you a reset link</p>
+            </div>
+
+            <!-- Success Message -->
             @if(session('success'))
-                <div class="alert alert-success">{{ session('success') }}</div>
+                <x-alert type="success" class="mb-6">
+                    {{ session('success') }}
+                </x-alert>
             @endif
-            
+
+            <!-- Error Messages -->
             @if($errors->any())
-                <div class="alert alert-error">
-                    <ul>
+                <x-alert type="error" class="mb-6">
+                    <ul class="space-y-1">
                         @foreach($errors->all() as $error)
                             <li>{{ $error }}</li>
                         @endforeach
                     </ul>
-                </div>
+                </x-alert>
             @endif
-            
-            <form method="POST" action="{{ route('password.email') }}">
+
+            <!-- Form -->
+            <form method="POST" action="{{ route('password.email') }}" class="space-y-6">
                 @csrf
-                
-                <div class="form-group">
-                    <label>Email Address</label>
-                    <input type="email" 
-                           name="email" 
-                           value="{{ old('email') }}"
-                           placeholder="Enter your email address"
-                           required>
-                </div>
-                
-                <button type="submit" class="btn-submit">Forgot Password</button>
+
+                <x-input
+                    label="Email Address"
+                    name="email"
+                    type="email"
+                    placeholder="Enter your email address"
+                    :value="old('email')"
+                    required
+                    autocomplete="email"
+                />
+
+                <x-button type="submit" variant="primary" class="w-full">
+                    Send Reset Link
+                </x-button>
             </form>
-            
-            <div class="back-link">
-                <a href="{{ route('login') }}">← Back to Login</a>
+
+            <!-- Back to Login Link -->
+            <div class="mt-6 text-center">
+                <a href="{{ route('login') }}" class="inline-flex items-center gap-2 text-sm text-primary hover:text-primary-400 font-medium transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    Back to Login
+                </a>
             </div>
-        </div>
+        </x-card>
     </div>
-</body>
-</html>
+</div>
+@endsection

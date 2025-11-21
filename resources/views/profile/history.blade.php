@@ -2,363 +2,224 @@
 
 @section('title', 'Transaction History - UP STORE')
 
-@section('styles')
-<style>
-    .history-container {
-        max-width: 1100px;
-        margin: 0 auto;
-    }
-    
-    .page-header {
-        margin-bottom: 30px;
-    }
-    
-    .page-title {
-        font-size: 28px;
-        font-weight: 700;
-        color: white;
-        margin-bottom: 8px;
-    }
-    
-    .page-subtitle {
-        color: #999;
-        font-size: 15px;
-    }
-    
-    /* Transactions Table */
-    .transactions-table {
-        background: #2a2a2a;
-        border: 1px solid #3a3a3a;
-        border-radius: 12px;
-        overflow: hidden;
-    }
-    
-    .table-header {
-        background: #1a1a1a;
-        padding: 20px 25px;
-        display: grid;
-        grid-template-columns: 2fr 1.3fr 1fr 1fr 0.8fr 1fr;
-        gap: 15px;
-        font-size: 13px;
-        font-weight: 600;
-        color: #999;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    
-    .transaction-row {
-        padding: 20px 25px;
-        border-bottom: 1px solid #3a3a3a;
-        display: grid;
-        grid-template-columns: 2fr 1.3fr 1fr 1fr 0.8fr 1fr;
-        gap: 15px;
-        align-items: center;
-        transition: background 0.3s;
-    }
-    
-    .transaction-row:last-child {
-        border-bottom: none;
-    }
-    
-    .transaction-row:hover {
-        background: #333;
-    }
-    
-    .game-info {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-    
-    .game-icon {
-        width: 45px;
-        height: 45px;
-        border-radius: 8px;
-        background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-        flex-shrink: 0;
-    }
-    
-    .game-details h4 {
-        font-size: 15px;
-        color: white;
-        margin-bottom: 4px;
-    }
-    
-    .game-details p {
-        font-size: 13px;
-        color: #999;
-    }
-    
-    .transaction-date {
-        font-size: 14px;
-        color: #ccc;
-    }
-    
-    .transaction-amount {
-        font-size: 15px;
-        font-weight: 600;
-        color: white;
-    }
-    
-    .transaction-id {
-        font-size: 13px;
-        color: #999;
-        font-family: monospace;
-    }
-    
-    .transaction-status {
-        display: inline-block;
-        padding: 6px 14px;
-        border-radius: 12px;
-        font-size: 12px;
-        font-weight: 600;
-        text-align: center;
-    }
-    
-    .status-pending {
-        background: #fff3cd;
-        color: #856404;
-    }
-    
-    .status-paid {
-        background: #d4edda;
-        color: #155724;
-    }
-    
-    .status-failed {
-        background: #f8d7da;
-        color: #721c24;
-    }
-    
-    .status-cancelled {
-        background: #f0f0f0;
-        color: #666;
-    }
-    
-    /* Action Buttons */
-    .transaction-actions {
-        display: flex;
-        gap: 8px;
-        justify-content: flex-end;
-    }
-    
-    .btn-action {
-        padding: 8px 16px;
-        border-radius: 6px;
-        font-size: 13px;
-        font-weight: 600;
-        text-decoration: none;
-        transition: all 0.3s;
-        border: none;
-        cursor: pointer;
-        white-space: nowrap;
-    }
-    
-    .btn-pay {
-        background: #FF8C00;
-        color: white;
-    }
-    
-    .btn-pay:hover {
-        background: #ff9d1f;
-        transform: translateY(-1px);
-    }
-    
-    .btn-view {
-        background: transparent;
-        color: #4caf50;
-        border: 1px solid #4caf50;
-    }
-    
-    .btn-view:hover {
-        background: #4caf50;
-        color: white;
-    }
-    
-    /* Pagination */
-    .pagination-wrapper {
-        padding: 25px;
-        display: flex;
-        justify-content: center;
-        border-top: 1px solid #3a3a3a;
-    }
-    
-    .pagination {
-        display: flex;
-        gap: 8px;
-        list-style: none;
-    }
-    
-    .pagination li a,
-    .pagination li span {
-        padding: 10px 16px;
-        background: #3a3a3a;
-        border-radius: 8px;
-        color: white;
-        text-decoration: none;
-        transition: all 0.3s;
-        font-size: 14px;
-    }
-    
-    .pagination li a:hover {
-        background: #FF8C00;
-    }
-    
-    .pagination li.active span {
-        background: #FF8C00;
-    }
-    
-    .pagination li.disabled span {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-    
-    /* Empty State */
-    .empty-state {
-        padding: 80px 20px;
-        text-align: center;
-    }
-    
-    .empty-icon {
-        font-size: 64px;
-        margin-bottom: 20px;
-        opacity: 0.3;
-    }
-    
-    .empty-title {
-        font-size: 20px;
-        font-weight: 600;
-        color: white;
-        margin-bottom: 8px;
-    }
-    
-    .empty-text {
-        color: #999;
-        margin-bottom: 24px;
-    }
-    
-    .btn-primary {
-        display: inline-block;
-        padding: 12px 28px;
-        background: #FF8C00;
-        color: white;
-        text-decoration: none;
-        border-radius: 8px;
-        font-weight: 600;
-        transition: all 0.3s;
-    }
-    
-    .btn-primary:hover {
-        background: #ff9d1f;
-        transform: translateY(-2px);
-    }
-    
-    @media (max-width: 1100px) {
-        .table-header {
-            display: none;
-        }
-        
-        .transaction-row {
-            grid-template-columns: 1fr;
-            gap: 12px;
-            padding: 20px;
-        }
-        
-        .game-info {
-            grid-column: 1;
-        }
-        
-        .transaction-date,
-        .transaction-amount,
-        .transaction-id,
-        .transaction-status {
-            justify-self: start;
-        }
-        
-        .transaction-actions {
-            justify-content: flex-start;
-        }
-    }
-</style>
-@endsection
-
 @section('content')
-<div class="history-container">
-    <div class="page-header">
-        <h1 class="page-title">Riwayat Transaksi</h1>
-        <p class="page-subtitle">View your purchase history and transaction details</p>
-    </div>
-    
-    <div class="transactions-table">
+<div class="max-w-6xl mx-auto">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-white mb-2">Riwayat Transaksi</h1>
+            <p class="text-text-secondary">View your purchase history and transaction details</p>
+        </div>
         @if($transactions->count() > 0)
-            <div class="table-header">
-                <div>Game</div>
-                <div>Date</div>
-                <div>Amount</div>
-                <div>Transaction ID</div>
-                <div>Status</div>
-                <div>Action</div>
-            </div>
-            
-            @foreach($transactions as $transaction)
-                <div class="transaction-row">
-                    <div class="game-info">
-                        <div class="game-icon">🎮</div>
-                        <div class="game-details">
-                            <h4>{{ $transaction->topupOption->game->name }}</h4>
-                            <p>{{ $transaction->topupOption->amount ?? $transaction->coins . ' Coins' }}</p>
-                        </div>
-                    </div>
-                    
-                    <div class="transaction-date">
-                        {{ $transaction->created_at->format('d M Y, H:i') }}
-                    </div>
-                    
-                    <div class="transaction-amount">
-                        Rp {{ number_format($transaction->price, 0, ',', '.') }}
-                    </div>
-                    
-                    <div class="transaction-id">
-                        #{{ str_pad($transaction->id, 6, '0', STR_PAD_LEFT) }}
-                    </div>
-                    
-                    <div>
-                        <span class="transaction-status status-{{ $transaction->status }}">
-                            {{ ucfirst($transaction->status) }}
-                        </span>
-                    </div>
-                    
-                    <div class="transaction-actions">
-                        @if($transaction->status === 'pending')
-                            <a href="{{ route('transaction.show', $transaction->id) }}" class="btn-action btn-pay">
-                                Pay Now
-                            </a>
-                        @elseif($transaction->status === 'paid')
-                            <a href="{{ route('transaction.show', $transaction->id) }}" class="btn-action btn-view">
-                                View Receipt
-                            </a>
-                        @endif
-                    </div>
+            <x-button variant="secondary" onclick="exportTransactions()" class="whitespace-nowrap">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                Export CSV
+            </x-button>
+        @endif
+    </div>
+
+    <!-- Search and Filter Bar -->
+    @if($transactions->count() > 0)
+        <x-card class="mb-6">
+            <form method="GET" action="{{ route('profile.history') }}" class="flex flex-col md:flex-row gap-4">
+                <!-- Search -->
+                <div class="flex-1">
+                    <label class="block text-xs font-medium text-text-tertiary mb-2">Search Game</label>
+                    <input type="text"
+                           name="search"
+                           value="{{ request('search') }}"
+                           placeholder="Search by game name..."
+                           class="w-full px-4 py-2.5 bg-dark-elevated border border-dark-border rounded-lg text-white placeholder-text-tertiary focus:outline-none focus:border-primary transition-all">
                 </div>
-            @endforeach
-            
+
+                <!-- Status Filter -->
+                <div class="md:w-48">
+                    <label class="block text-xs font-medium text-text-tertiary mb-2">Status</label>
+                    <select name="status" class="w-full px-4 py-2.5 bg-dark-elevated border border-dark-border rounded-lg text-white focus:outline-none focus:border-primary transition-all">
+                        <option value="">All Status</option>
+                        <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>Completed</option>
+                        <option value="failed" {{ request('status') === 'failed' ? 'selected' : '' }}>Failed</option>
+                        <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                    </select>
+                </div>
+
+                <!-- Date Filter -->
+                <div class="md:w-48">
+                    <label class="block text-xs font-medium text-text-tertiary mb-2">Month</label>
+                    <input type="month"
+                           name="month"
+                           value="{{ request('month') }}"
+                           class="w-full px-4 py-2.5 bg-dark-elevated border border-dark-border rounded-lg text-white focus:outline-none focus:border-primary transition-all">
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex gap-2 md:self-end">
+                    <button type="submit" class="px-6 py-2.5 bg-primary hover:bg-primary-hover rounded-lg text-white font-medium transition-all">
+                        Filter
+                    </button>
+                    @if(request('search') || request('status') || request('month'))
+                        <a href="{{ route('profile.history') }}" class="px-6 py-2.5 bg-dark-elevated hover:bg-dark-hover border border-dark-border rounded-lg text-white font-medium transition-all">
+                            Clear
+                        </a>
+                    @endif
+                </div>
+            </form>
+        </x-card>
+    @endif
+
+    <x-card :padding="false">
+        @if($transactions->count() > 0)
+            <div class="overflow-x-auto">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Game</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Transaction ID</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($transactions as $transaction)
+                            <tr>
+                                <td>
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-11 h-11 rounded-lg bg-dark-elevated flex items-center justify-center flex-shrink-0">
+                                            <x-icon name="gamepad" class="text-primary" />
+                                        </div>
+                                        <div>
+                                            <h4 class="text-white font-medium mb-1">{{ $transaction->topupOption->game->name }}</h4>
+                                            <p class="text-sm text-text-secondary">{{ $transaction->topupOption->amount ?? $transaction->coins . ' Coins' }}</p>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td class="text-text-primary">
+                                    {{ $transaction->created_at->format('d M Y, H:i') }}
+                                </td>
+
+                                <td class="text-white font-semibold">
+                                    Rp {{ number_format($transaction->price, 0, ',', '.') }}
+                                </td>
+
+                                <td class="text-text-secondary font-mono text-sm">
+                                    <button type="button"
+                                            onclick="copyToClipboard('#{{ str_pad($transaction->id, 6, '0', STR_PAD_LEFT) }}')"
+                                            class="inline-flex items-center gap-2 hover:text-primary transition-colors group"
+                                            title="Click to copy">
+                                        #{{ str_pad($transaction->id, 6, '0', STR_PAD_LEFT) }}
+                                        <svg class="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                        </svg>
+                                    </button>
+                                </td>
+
+                                <td>
+                                    <x-badge variant="{{ $transaction->status === 'paid' ? 'success' : ($transaction->status === 'failed' ? 'error' : ($transaction->status === 'cancelled' ? 'default' : 'warning')) }}">
+                                        {{ ucfirst($transaction->status) }}
+                                    </x-badge>
+                                </td>
+
+                                <td>
+                                    <div class="flex gap-2 justify-end">
+                                        @if($transaction->status === 'pending')
+                                            <x-button variant="primary" size="sm" href="{{ route('transaction.show', $transaction->id) }}">
+                                                Pay Now
+                                            </x-button>
+                                        @elseif($transaction->status === 'paid')
+                                            <x-button variant="success" size="sm" href="{{ route('transaction.show', $transaction->id) }}">
+                                                View Receipt
+                                            </x-button>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
             @if($transactions->hasPages())
-                <div class="pagination-wrapper">
+                <div class="p-6 flex justify-center border-t border-dark-border">
                     {{ $transactions->links() }}
                 </div>
             @endif
         @else
-            <div class="empty-state">
-                <div class="empty-icon">📋</div>
-                <h3 class="empty-title">No Transactions Yet</h3>
-                <p class="empty-text">You haven't made any purchases yet. Start shopping for your favorite games!</p>
-                <a href="{{ route('home') }}" class="btn-primary">Browse Games</a>
+            <div class="py-20 text-center">
+                <div class="text-6xl mb-5 opacity-30">📋</div>
+                <h3 class="text-xl font-semibold text-white mb-2">No Transactions Yet</h3>
+                <p class="text-text-secondary mb-6">You haven't made any purchases yet. Start shopping for your favorite games!</p>
+                <x-button variant="primary" href="{{ route('home') }}">
+                    Browse Games
+                </x-button>
             </div>
         @endif
-    </div>
+    </x-card>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+// Copy to clipboard function
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        // Show success feedback
+        const notification = document.createElement('div');
+        notification.className = 'fixed bottom-4 right-4 bg-success text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in';
+        notification.textContent = `Copied: ${text}`;
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.remove();
+        }, 2000);
+    }).catch(err => {
+        console.error('Failed to copy:', err);
+        alert('Failed to copy transaction ID');
+    });
+}
+
+// Export transactions to CSV
+function exportTransactions() {
+    const table = document.querySelector('.data-table');
+    let csv = [];
+
+    // Get headers
+    const headers = Array.from(table.querySelectorAll('thead th'))
+        .slice(0, -1) // Exclude "Action" column
+        .map(th => th.textContent.trim());
+    csv.push(headers.join(','));
+
+    // Get rows
+    const rows = table.querySelectorAll('tbody tr');
+    rows.forEach(row => {
+        const cols = Array.from(row.querySelectorAll('td'));
+        const rowData = [
+            cols[0].querySelector('h4').textContent.trim(), // Game
+            cols[1].textContent.trim(), // Date
+            cols[2].textContent.trim(), // Amount
+            cols[3].textContent.trim(), // Transaction ID
+            cols[4].textContent.trim()  // Status
+        ];
+        csv.push(rowData.map(field => `"${field}"`).join(','));
+    });
+
+    // Create download
+    const csvContent = csv.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+
+    link.setAttribute('href', url);
+    link.setAttribute('download', `transactions_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+</script>
 @endsection

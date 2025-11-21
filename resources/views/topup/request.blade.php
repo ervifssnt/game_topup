@@ -2,320 +2,119 @@
 
 @section('title', 'Top-Up Wallet')
 
-@section('styles')
-<style>
-    .topup-container {
-        max-width: 900px;
-        margin: 0 auto;
-    }
-    
-    .balance-header {
-        background: linear-gradient(135deg, #FF8C00 0%, #ff9d1f 100%);
-        border-radius: 12px;
-        padding: 30px;
-        margin-bottom: 30px;
-        text-align: center;
-        color: white;
-    }
-    
-    .current-balance {
-        font-size: 16px;
-        opacity: 0.9;
-        margin-bottom: 8px;
-    }
-    
-    .balance-amount {
-        font-size: 36px;
-        font-weight: 700;
-    }
-    
-    .pending-requests {
-        background: #2a2a2a;
-        border-radius: 12px;
-        padding: 24px;
-        margin-bottom: 24px;
-        border: 1px solid #3a3a3a;
-    }
-    
-    .pending-title {
-        font-size: 18px;
-        font-weight: 600;
-        color: white;
-        margin-bottom: 16px;
-    }
-    
-    .pending-item {
-        background: #fff3cd;
-        padding: 16px 20px;
-        border-radius: 8px;
-        margin-bottom: 12px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    
-    .pending-item:last-child {
-        margin-bottom: 0;
-    }
-    
-    .pending-amount {
-        font-size: 20px;
-        font-weight: 700;
-        color: #856404;
-    }
-    
-    .pending-status {
-        color: #856404;
-        font-size: 14px;
-    }
-    
-    .topup-form-card {
-        background: #2a2a2a;
-        border-radius: 12px;
-        padding: 30px;
-        border: 1px solid #3a3a3a;
-    }
-    
-    .form-title {
-        font-size: 22px;
-        font-weight: 700;
-        color: white;
-        margin-bottom: 24px;
-    }
-    
-    .form-group {
-        margin-bottom: 20px;
-    }
-    
-    .form-group label {
-        display: block;
-        font-size: 14px;
-        font-weight: 500;
-        color: #ccc;
-        margin-bottom: 8px;
-    }
-    
-    .form-control {
-        width: 100%;
-        padding: 12px 16px;
-        background: #1a1a1a;
-        border: 1px solid #3a3a3a;
-        border-radius: 8px;
-        color: white;
-        font-size: 15px;
-        transition: all 0.3s;
-    }
-    
-    .form-control:focus {
-        outline: none;
-        border-color: #FF8C00;
-    }
-    
-    select.form-control {
-        cursor: pointer;
-    }
-    
-    textarea.form-control {
-        resize: vertical;
-        min-height: 100px;
-    }
-    
-    .form-hint {
-        font-size: 13px;
-        color: #999;
-        margin-top: 6px;
-    }
-    
-    .payment-methods {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 12px;
-        margin-top: 8px;
-    }
-    
-    .payment-option {
-        position: relative;
-    }
-    
-    .payment-option input[type="radio"] {
-        position: absolute;
-        opacity: 0;
-    }
-    
-    .payment-label {
-        display: block;
-        padding: 16px;
-        background: #3a3a3a;
-        border: 2px solid #3a3a3a;
-        border-radius: 8px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s;
-        color: white;
-        font-size: 14px;
-        font-weight: 500;
-    }
-    
-    .payment-option input[type="radio"]:checked + .payment-label {
-        border-color: #FF8C00;
-        background: #404040;
-    }
-    
-    .payment-label:hover {
-        background: #404040;
-    }
-    
-    .action-buttons {
-        display: flex;
-        gap: 12px;
-        margin-top: 24px;
-    }
-    
-    .btn-submit {
-        flex: 1;
-        padding: 14px;
-        background: #FF8C00;
-        border: none;
-        border-radius: 8px;
-        color: white;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-    
-    .btn-submit:hover {
-        background: #ff9d1f;
-        transform: translateY(-2px);
-    }
-    
-    .btn-history {
-        padding: 14px 24px;
-        background: transparent;
-        border: 1px solid #4a4a4a;
-        border-radius: 8px;
-        color: white;
-        font-size: 16px;
-        font-weight: 600;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.3s;
-    }
-    
-    .btn-history:hover {
-        background: #3a3a3a;
-        border-color: #FF8C00;
-    }
-    
-    @media (max-width: 768px) {
-        .payment-methods {
-            grid-template-columns: repeat(2, 1fr);
-        }
-        
-        .action-buttons {
-            flex-direction: column;
-        }
-    }
-</style>
-@endsection
-
 @section('content')
-<div class="topup-container">
+<div class="max-w-4xl mx-auto">
     <!-- Balance Header -->
-    <div class="balance-header">
-        <div class="current-balance">Current Balance</div>
-        <div class="balance-amount">Rp {{ number_format(Auth::user()->balance, 0, ',', '.') }}</div>
+    <div class="bg-gradient-to-br from-primary to-primary-hover rounded-xl p-8 mb-8 text-center text-white">
+        <div class="text-base opacity-90 mb-2">Current Balance</div>
+        <div class="text-4xl font-bold">Rp {{ number_format(Auth::user()->balance, 0, ',', '.') }}</div>
     </div>
 
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+        <x-alert type="success" class="mb-6">
+            {{ session('success') }}
+        </x-alert>
     @endif
 
     <!-- Pending Requests -->
     @if($pendingRequests->count() > 0)
-        <div class="pending-requests">
-            <div class="pending-title">⏳ Pending Requests</div>
+        <x-card class="mb-6">
+            <div class="flex items-center gap-2 text-lg font-semibold text-white mb-4">
+                <x-icon name="clock" class="text-warning" />
+                Pending Requests
+            </div>
             @foreach($pendingRequests as $req)
-                <div class="pending-item">
+                <div class="bg-warning/10 border border-warning/30 rounded-lg p-4 mb-3 last:mb-0 flex justify-between items-center flex-col sm:flex-row gap-3">
                     <div>
-                        <div class="pending-amount">Rp {{ number_format($req->amount, 0, ',', '.') }}</div>
-                        <div class="pending-status">Waiting for admin approval</div>
+                        <div class="text-xl font-bold text-warning">Rp {{ number_format($req->amount, 0, ',', '.') }}</div>
+                        <div class="text-sm text-warning/80">Waiting for admin approval</div>
                     </div>
-                    <div style="text-align: right; font-size: 13px; color: #856404;">
+                    <div class="text-sm text-warning/70 text-right">
                         {{ $req->created_at->format('d M Y, H:i') }}
                     </div>
                 </div>
-            @endforeach>
-        </div>
+            @endforeach
+        </x-card>
     @endif
 
     <!-- Top-Up Form -->
-    <div class="topup-form-card">
-        <h2 class="form-title">New Top-Up Request</h2>
-        
+    <x-card>
+        <h2 class="text-2xl font-bold text-white mb-6">New Top-Up Request</h2>
+
         <form action="{{ route('topup.submit') }}" method="POST" enctype="multipart/form-data">
             @csrf
-            
-            <div class="form-group">
-                <label>Amount (Rp) *</label>
-                <input type="number" name="amount" class="form-control" min="10000" step="1000" placeholder="Enter amount (min. Rp 10,000)" value="{{ old('amount') }}" required>
-                <div class="form-hint">Minimum top-up amount is Rp 10,000</div>
-                @error('amount')
-                    <span style="color: #ef5350; font-size: 13px;">{{ $message }}</span>
-                @enderror
-            </div>
-            
-            <div class="form-group">
-                <label>Payment Method *</label>
-                <div class="payment-methods">
-                    <div class="payment-option">
-                        <input type="radio" name="payment_method" value="BCA" id="bca" required>
-                        <label for="bca" class="payment-label">BCA</label>
-                    </div>
-                    <div class="payment-option">
-                        <input type="radio" name="payment_method" value="Mandiri" id="mandiri">
-                        <label for="mandiri" class="payment-label">Mandiri</label>
-                    </div>
-                    <div class="payment-option">
-                        <input type="radio" name="payment_method" value="BNI" id="bni">
-                        <label for="bni" class="payment-label">BNI</label>
-                    </div>
-                    <div class="payment-option">
-                        <input type="radio" name="payment_method" value="GoPay" id="gopay">
-                        <label for="gopay" class="payment-label">GoPay</label>
-                    </div>
-                    <div class="payment-option">
-                        <input type="radio" name="payment_method" value="OVO" id="ovo">
-                        <label for="ovo" class="payment-label">OVO</label>
-                    </div>
-                    <div class="payment-option">
-                        <input type="radio" name="payment_method" value="DANA" id="dana">
-                        <label for="dana" class="payment-label">DANA</label>
-                    </div>
+
+            <x-input
+                type="number"
+                name="amount"
+                label="Amount (Rp)"
+                placeholder="Enter amount (min. Rp 10,000)"
+                :value="old('amount')"
+                min="10000"
+                step="1000"
+                hint="Minimum top-up amount is Rp 10,000"
+                :error="$errors->first('amount')"
+                required />
+
+            <div class="mb-5">
+                <label class="block text-sm font-medium text-text-primary mb-2">Payment Method *</label>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    @php
+                    $methods = [
+                        'BCA' => ['icon' => '🏦', 'desc' => 'Bank Transfer'],
+                        'Mandiri' => ['icon' => '🏦', 'desc' => 'Bank Transfer'],
+                        'BNI' => ['icon' => '🏦', 'desc' => 'Bank Transfer'],
+                        'GoPay' => ['icon' => '💳', 'desc' => 'E-Wallet'],
+                        'OVO' => ['icon' => '💳', 'desc' => 'E-Wallet'],
+                        'DANA' => ['icon' => '💳', 'desc' => 'E-Wallet'],
+                    ];
+                    @endphp
+                    @foreach($methods as $method => $details)
+                        <div>
+                            <input type="radio" name="payment_method" value="{{ $method }}" id="{{ strtolower($method) }}" class="peer hidden" {{ $loop->first ? 'required' : '' }}>
+                            <label for="{{ strtolower($method) }}" class="block p-4 bg-dark-elevated border-2 border-dark-border rounded-lg text-center cursor-pointer transition-all hover:bg-dark-surface hover:border-primary/50 peer-checked:border-primary peer-checked:bg-dark-surface peer-checked:shadow-lg peer-checked:scale-105">
+                                <div class="text-2xl mb-2">{{ $details['icon'] }}</div>
+                                <div class="text-white font-semibold mb-1">{{ $method }}</div>
+                                <div class="text-xs text-text-tertiary">{{ $details['desc'] }}</div>
+                            </label>
+                        </div>
+                    @endforeach
                 </div>
             </div>
-            
-            <div class="form-group">
-                <label>Payment Proof (Optional)</label>
-                <input type="file" name="proof_image" class="form-control" accept="image/jpeg,image/png">
-                <div class="form-hint">Upload payment proof (Max 2MB, JPG/PNG only)</div>
-                @error('proof_image')
-                    <span style="color: #ef5350; font-size: 13px;">{{ $message }}</span>
-                @enderror
+
+            <x-input
+                type="file"
+                name="proof_image"
+                label="Payment Proof (Optional)"
+                accept="image/jpeg,image/png"
+                hint="Upload payment proof (Max 2MB, JPG/PNG only)"
+                :error="$errors->first('proof_image')" />
+
+            <div class="mb-6">
+                <div class="flex justify-between items-center mb-2">
+                    <label for="notes" class="block text-sm font-medium text-text-primary">Notes (Optional)</label>
+                    <span class="text-xs text-text-tertiary"><span id="charCount">0</span>/500</span>
+                </div>
+                <textarea
+                    name="notes"
+                    id="notes"
+                    rows="4"
+                    maxlength="500"
+                    class="w-full px-4 py-3 bg-dark-elevated border border-dark-border rounded-lg text-white placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-vertical"
+                    placeholder="Any additional information (e.g., account details, special requests)..."
+                    oninput="document.getElementById('charCount').textContent = this.value.length">{{ old('notes') }}</textarea>
+                <p class="text-xs text-text-tertiary mt-1.5">Add any relevant details that might help us process your request faster</p>
             </div>
-            
-            <div class="form-group">
-                <label>Notes (Optional)</label>
-                <textarea name="notes" class="form-control" placeholder="Any additional information...">{{ old('notes') }}</textarea>
-            </div>
-            
-            <div class="action-buttons">
-                <button type="submit" class="btn-submit">Submit Request</button>
-                <a href="{{ route('topup.history') }}" class="btn-history">View History</a>
+
+            <div class="flex flex-col sm:flex-row gap-3">
+                <x-button type="submit" variant="primary" class="flex-1">
+                    Submit Request
+                </x-button>
+                <x-button variant="secondary" href="{{ route('topup.history') }}">
+                    View History
+                </x-button>
             </div>
         </form>
-    </div>
+    </x-card>
 </div>
 @endsection

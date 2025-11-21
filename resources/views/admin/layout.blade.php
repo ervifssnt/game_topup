@@ -438,12 +438,6 @@
                 </a>
             </li>
             <li class="menu-item">
-                <a href="{{ route('home') }}" class="menu-link">
-                    <span class="menu-icon">🏠</span>
-                    <span>Back to Site</span>
-                </a>
-            </li>
-            <li class="menu-item">
                 <a href="{{ route('admin.audit-logs') }}" class="menu-link {{ request()->routeIs('admin.audit-logs') ? 'active' : '' }}">
                   <span class="menu-icon">📋</span>
                   <span>Audit Logs</span>
@@ -461,6 +455,12 @@
                     <span>Top-Up Requests</span>
             </a>
         </li>
+            <li class="menu-item">
+                <a href="{{ route('home') }}" class="menu-link">
+                    <span class="menu-icon">🏠</span>
+                    <span>Back to Site</span>
+                </a>
+            </li>
     </ul>
     </div>
     
