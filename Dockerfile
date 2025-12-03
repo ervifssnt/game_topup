@@ -13,7 +13,8 @@ RUN apk add --no-cache \
     nginx \
     supervisor \
     mysql-client \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip \
+    && git config --global --add safe.directory /var/www/html
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
