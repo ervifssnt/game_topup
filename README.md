@@ -107,8 +107,8 @@ docker compose exec app php artisan migrate:fresh --seed --force
   - Password: `SecurePassword123!`
 
 **Default Login Credentials**:
-- **User Account**: user@example.com / password123
-- **Admin Account**: admin@example.com / password123
+- **User Account**: user@test.com / password
+- **Admin Account**: admin@test.com / password
 
 **Troubleshooting**:
 If you see "Please provide a valid cache path" error:
