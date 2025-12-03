@@ -54,6 +54,10 @@ until docker compose exec mysql mysqladmin ping -h localhost --silent; do
 done
 echo "✅ MySQL is ready"
 
+# Install PHP dependencies (if vendor doesn't exist)
+echo "📦 Installing PHP dependencies..."
+docker compose exec app composer install --no-interaction --prefer-dist
+
 # Generate APP_KEY if not set
 echo "🔑 Checking application key..."
 if ! grep -q "APP_KEY=base64:" .env; then
@@ -63,10 +67,6 @@ if ! grep -q "APP_KEY=base64:" .env; then
 else
     echo "✅ Application key already exists"
 fi
-
-# Install PHP dependencies (if vendor doesn't exist)
-echo "📦 Installing PHP dependencies..."
-docker compose exec app composer install --no-interaction --prefer-dist
 
 # Create storage directories if they don't exist
 echo "📁 Creating required storage directories..."
