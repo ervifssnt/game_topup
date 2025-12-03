@@ -52,6 +52,23 @@ Laravel-based web application with comprehensive security implementations for cy
 
 ### Docker Setup (Recommended)
 
+**Option A: Automated Setup (Easiest)**
+```bash
+# 1. Extract ZIP and navigate to directory
+unzip game_topup_audit.zip
+cd game_topup
+
+# 2. Run automated setup script
+./docker-setup.sh
+
+# This script will:
+# - Build and start all containers
+# - Fix storage/cache permissions
+# - Run migrations and seed the database
+# - Display access information
+```
+
+**Option B: Manual Setup**
 ```bash
 # 1. Extract ZIP and navigate to directory
 unzip game_topup_audit.zip
@@ -60,21 +77,45 @@ cd game_topup
 # 2. Start Docker containers
 docker compose up -d
 
-# 3. Run migrations and seed database
-docker compose exec app php artisan migrate:fresh --seed
+# 3. Wait for MySQL to be ready (about 10 seconds)
+sleep 10
 
-# 4. Access the application
-# - App: http://localhost:8000
-# - phpMyAdmin: http://localhost:8080 (user: root, password: root_password)
+# 4. Fix storage permissions (IMPORTANT!)
+docker compose exec app chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+docker compose exec app chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
+# 5. Clear caches
+docker compose exec app php artisan config:clear
+docker compose exec app php artisan cache:clear
+
+# 6. Run migrations and seed database
+docker compose exec app php artisan migrate:fresh --seed --force
 ```
 
-**Default User Account**:
-- Email: `user@example.com`
-- Password: `password123`
+**Access Information**:
+- **Application**: http://localhost:8000
+- **phpMyAdmin**: http://localhost:8080
+  - User: `laravel_user`
+  - Password: `SecurePassword123!`
+
+**Default Login Credentials**:
+- **User Account**: user@example.com / password123
+- **Admin Account**: admin@example.com / password123
+
+**Troubleshooting**:
+If you see "Please provide a valid cache path" error:
+```bash
+# Fix permissions and clear caches
+docker compose exec app chown -R www-data:www-data storage bootstrap/cache
+docker compose exec app chmod -R 775 storage bootstrap/cache
+docker compose exec app php artisan config:clear
+docker compose exec app php artisan cache:clear
+docker compose restart app
+```
 
 **Notes**:
 - The `.env` file is already configured for Docker (MySQL database)
-- An admin account exists in the seeded database for testing admin features if needed
+- The automated script (`docker-setup.sh`) handles all permission issues automatically
 - Start testing with the regular user account to evaluate user-facing security features
 
 ### Local Development Setup (Alternative)
