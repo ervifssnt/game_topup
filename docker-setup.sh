@@ -62,7 +62,9 @@ docker compose exec app composer install --no-interaction --prefer-dist
 echo "🔑 Checking application key..."
 if ! grep -q "APP_KEY=base64:" .env; then
     echo "   Generating application key..."
-    docker compose exec app php artisan key:generate --force
+    # Generate key and write it to .env (artisan can't write due to permissions)
+    APP_KEY=$(docker compose exec -T app php artisan key:generate --show)
+    sed -i "s|^APP_KEY=.*|APP_KEY=$APP_KEY|" .env
     echo "✅ Application key generated"
 else
     echo "✅ Application key already exists"
