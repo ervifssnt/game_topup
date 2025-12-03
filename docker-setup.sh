@@ -21,6 +21,15 @@ fi
 
 echo "✅ Docker is running"
 
+# Create .env file if it doesn't exist
+if [ ! -f ".env" ]; then
+    echo "📝 Creating .env file from .env.docker.example..."
+    cp .env.docker.example .env
+    echo "✅ .env file created"
+else
+    echo "✅ .env file already exists"
+fi
+
 # Stop any existing containers
 echo "🛑 Stopping existing containers (if any)..."
 docker compose down 2>/dev/null || true
@@ -44,6 +53,16 @@ until docker compose exec mysql mysqladmin ping -h localhost --silent; do
     sleep 2
 done
 echo "✅ MySQL is ready"
+
+# Generate APP_KEY if not set
+echo "🔑 Checking application key..."
+if ! grep -q "APP_KEY=base64:" .env; then
+    echo "   Generating application key..."
+    docker compose exec app php artisan key:generate --force
+    echo "✅ Application key generated"
+else
+    echo "✅ Application key already exists"
+fi
 
 # Install PHP dependencies (if vendor doesn't exist)
 echo "📦 Installing PHP dependencies..."

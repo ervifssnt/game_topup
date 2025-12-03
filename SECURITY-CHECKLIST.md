@@ -146,7 +146,6 @@ Based on comprehensive security review:
 3. **Documentation**
    - README.md
    - SECURITY-CHECKLIST.md (this file)
-   - CLAUDE.md (development guidelines)
 
 4. **Database**
    - Schema export or migration files

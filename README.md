@@ -54,14 +54,16 @@ Laravel-based web application with comprehensive security implementations for cy
 
 **Option A: Automated Setup (Easiest)**
 ```bash
-# 1. Extract ZIP and navigate to directory
-unzip game_topup_audit.zip
+# 1. Clone repository and navigate to directory
+git clone https://github.com/ervifssnt/game_topup.git
 cd game_topup
 
 # 2. Run automated setup script
 ./docker-setup.sh
 
 # This script will:
+# - Create .env file from .env.docker.example
+# - Generate application key
 # - Build and start all containers
 # - Fix storage/cache permissions
 # - Run migrations and seed the database
@@ -70,25 +72,31 @@ cd game_topup
 
 **Option B: Manual Setup**
 ```bash
-# 1. Extract ZIP and navigate to directory
-unzip game_topup_audit.zip
+# 1. Clone repository and navigate to directory
+git clone https://github.com/ervifssnt/game_topup.git
 cd game_topup
 
-# 2. Start Docker containers
+# 2. Copy environment file
+cp .env.docker.example .env
+
+# 3. Start Docker containers
 docker compose up -d
 
 # 3. Wait for MySQL to be ready (about 10 seconds)
 sleep 10
 
-# 4. Fix storage permissions (IMPORTANT!)
+# 4. Generate application key
+docker compose exec app php artisan key:generate
+
+# 5. Fix storage permissions (IMPORTANT!)
 docker compose exec app chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 docker compose exec app chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# 5. Clear caches
+# 6. Clear caches
 docker compose exec app php artisan config:clear
 docker compose exec app php artisan cache:clear
 
-# 6. Run migrations and seed database
+# 7. Run migrations and seed database
 docker compose exec app php artisan migrate:fresh --seed --force
 ```
 
@@ -114,15 +122,15 @@ docker compose restart app
 ```
 
 **Notes**:
-- The `.env` file is already configured for Docker (MySQL database)
-- The automated script (`docker-setup.sh`) handles all permission issues automatically
+- The automated script (`docker-setup.sh`) creates `.env` from `.env.docker.example` and handles all setup automatically
+- Docker uses MySQL database, while local development uses SQLite
 - Start testing with the regular user account to evaluate user-facing security features
 
 ### Local Development Setup (Alternative)
 
 ```bash
-# 1. Extract ZIP and navigate to directory
-unzip game_topup_audit.zip
+# 1. Clone repository and navigate to directory
+git clone https://github.com/ervifssnt/game_topup.git
 cd game_topup
 
 # 2. Install dependencies

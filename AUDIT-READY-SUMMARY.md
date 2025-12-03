@@ -191,7 +191,6 @@ php.ini                      # PHP configuration (if customized)
 ### Documentation
 ```
 README.md                    # Project overview & setup instructions
-CLAUDE.md                    # Development guidelines & architecture
 SECURITY-CHECKLIST.md        # Pre-deployment security checklist
 AUDIT-READY-SUMMARY.md       # This document
 ```
