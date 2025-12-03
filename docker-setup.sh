@@ -79,12 +79,6 @@ echo "🔧 Fixing storage and cache permissions..."
 docker compose exec app chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 docker compose exec app chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Clear any cached config
-echo "🧹 Clearing Laravel caches..."
-docker compose exec app php artisan config:clear || true
-docker compose exec app php artisan cache:clear || true
-docker compose exec app php artisan view:clear || true
-
 # Run migrations and seed database
 echo "📊 Running database migrations and seeding..."
 docker compose exec app php artisan migrate:fresh --seed --force
