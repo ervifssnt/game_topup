@@ -33,6 +33,7 @@ CLAUDE.md
 *~
 *.swp
 *.swo
+*.zip
 
 # OS files
 .DS_Store
