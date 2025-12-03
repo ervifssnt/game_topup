@@ -30,6 +30,17 @@ else
     echo "✅ .env file already exists"
 fi
 
+# Generate APP_KEY if not set (BEFORE starting Docker!)
+echo "🔑 Checking application key..."
+if ! grep -q "APP_KEY=base64:" .env; then
+    echo "   Generating application key..."
+    RAND_KEY=$(openssl rand -base64 32)
+    sed -i.bak "s|^APP_KEY=.*|APP_KEY=base64:$RAND_KEY|" .env && rm .env.bak
+    echo "✅ Application key generated"
+else
+    echo "✅ Application key already exists"
+fi
+
 # Stop any existing containers
 echo "🛑 Stopping existing containers (if any)..."
 docker compose down 2>/dev/null || true
@@ -57,18 +68,6 @@ echo "✅ MySQL is ready"
 # Install PHP dependencies (if vendor doesn't exist)
 echo "📦 Installing PHP dependencies..."
 docker compose exec app composer install --no-interaction --prefer-dist
-
-# Generate APP_KEY if not set
-echo "🔑 Checking application key..."
-if ! grep -q "APP_KEY=base64:" .env; then
-    echo "   Generating application key..."
-    # Generate key using openssl (host command, no Docker permission issues)
-    RAND_KEY=$(openssl rand -base64 32)
-    sed -i.bak "s|^APP_KEY=.*|APP_KEY=base64:$RAND_KEY|" .env && rm .env.bak
-    echo "✅ Application key generated"
-else
-    echo "✅ Application key already exists"
-fi
 
 # Create storage directories if they don't exist
 echo "📁 Creating required storage directories..."
